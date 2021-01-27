@@ -2,6 +2,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
+<<<<<<< HEAD
+=======
+.idea/
+>>>>>>> f38ca65 (feat #1: create base structure for project)
 
 # C extensions
 *.so
@@ -126,4 +130,8 @@ venv.bak/
 dmypy.json
 
 # Pyre type checker
+<<<<<<< HEAD
 .pyre/
+=======
+.pyre/
+>>>>>>> f38ca65 (feat #1: create base structure for project)
