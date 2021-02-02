@@ -7,7 +7,7 @@ from django.utils import timezone
 
 class BaseAdvertisement(models.Model):
     class Meta:
-        abstract = True;
+        abstract = True
 
     TYPE_CHOICES = (
         (0, 'sale'),
@@ -35,7 +35,7 @@ class BaseAdvertisement(models.Model):
 
 class Document(models.Model):
     attachment = models.ImageField(upload_to='advertisement_attachments')
-    cattery = models.ForeignKey(Cattery, on_delete=models.CASCADE, related_name='attachments', null=True, blank=True)
+    cattery = models.ForeignKey(Cattery, on_delete=models.CASCADE, related_name='attachments')
 
 
 class GeneralAdvertisement(BaseAdvertisement):
