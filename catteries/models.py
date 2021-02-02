@@ -12,9 +12,9 @@ STATUS_CHOICES = (
 
 class Cattery(models.Model):
     name = models.CharField(max_length=30)
-    breed = models.ForeignKey(Breed, on_delete=models.SET_NULL, related_name='cats', null=True, blank=True)
+    breeds = models.ManyToManyField(Breed, on_delete=models.SET_NULL, null=True, blank=True)
     registrationDate = models.DateTimeField(default=timezone.now)
-    membershipFee = models.IntegerField(max_length=30)
+    membershipFee = models.IntegerField()
     leader = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ownedCatteries')
     city = models.CharField(max_length=30, null=True, blank=True)
     status = models.IntegerField(max_length=1, choices=STATUS_CHOICES, default=1)
@@ -24,7 +24,7 @@ class Cattery(models.Model):
 
 class Document(models.Model):
     attachment = models.ImageField(upload_to='cattery_attachments')
-    cattery = models.ForeignKey(Cattery, on_delete=models.CASCADE, related_name='cats', null=True, blank=True)
+    cattery = models.ForeignKey(Cattery, on_delete=models.CASCADE, related_name='attachments', null=True, blank=True)
 
 
 class UserInCattery(models.Model):
@@ -61,6 +61,6 @@ class Announcements(models.Model):
     status = models.IntegerField(max_length=1, choices=ANNOUNCEMENT_STATUS_CHOICES, default=0)
     text = models.CharField(max_length=500, blank=True, null=True)
     creationDate = models.DateTimeField(default=timezone.now)
-    # add 30 days
+    # ToDo: add 30 days
     showUntil = models.DateTimeField()
     deletionDate = models.DateTimeField(null=True, blank=True)
