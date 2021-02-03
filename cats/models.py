@@ -1,11 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-
-
-class Breed(models.Model):
-    name = models.CharField(max_length=30, blank=True)
-    description = models.CharField(max_length=500, blank=True)
-    image = models.ImageField(upload_to='breeds', default='breeds/default.png')
+from catteries.models import Cattery, Breed
 
 
 class Cat(models.Model):
@@ -22,8 +17,8 @@ class Cat(models.Model):
     breeder = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='bredCats', null=True, blank=True)
     breed = models.ForeignKey(Breed, on_delete=models.SET_NULL, related_name='cats', null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='ownCats', null=True, blank=True)
-    mother = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='childCats', null=True, blank=True)
-    father = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='childCats', null=True, blank=True)
+    mother = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='motherChildCats', null=True, blank=True)
+    father = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='fatherChildCats', null=True, blank=True)
     color = models.CharField(max_length=30, blank=True)
     birthDate = models.DateField()
     abilityToReproduce = models.BooleanField(default=True)
