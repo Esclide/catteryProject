@@ -17,10 +17,11 @@ class Breed(models.Model):
 
 class Cattery(models.Model):
     name = models.CharField(max_length=30)
-    breeds = models.ManyToManyField(Breed, blank=True)
+    breeds = models.ManyToManyField(Breed, null=True, blank=True)
     registrationDate = models.DateTimeField(default=timezone.now)
     membershipFee = models.IntegerField()
     leader = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ownedCatteries')
+    country = models.CharField(max_length=20, blank=True)
     city = models.CharField(max_length=30, null=True, blank=True)
     status = models.IntegerField( choices=STATUS_CHOICES, default=1)
     site = models.CharField(max_length=100, null=True, blank=True)

@@ -10,8 +10,8 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     profile_image = models.ImageField(upload_to='avatars', default='avatars/guest.png')
     phone = PhoneNumberField(null=True, blank=True)
-    city = models.CharField(max_length=20, blank=True)
     country = models.CharField(max_length=20, blank=True)
+    city = models.CharField(max_length=20, blank=True)
 
 
 @receiver(post_save, sender=User)
