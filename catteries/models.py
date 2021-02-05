@@ -12,12 +12,12 @@ STATUS_CHOICES = (
 class Breed(models.Model):
     name = models.CharField(max_length=30, blank=True)
     description = models.CharField(max_length=500, blank=True)
-    image = models.ImageField(upload_to='breeds', default='breeds/default.png')
+    image = models.ImageField(upload_to='breeds', default='breeds/default.png', null=True, blank=True)
 
 
 class Cattery(models.Model):
     name = models.CharField(max_length=30)
-    breeds = models.ManyToManyField(Breed, null=True, blank=True)
+    breeds = models.ManyToManyField(Breed, blank=True)
     registrationDate = models.DateTimeField(default=timezone.now)
     membershipFee = models.IntegerField()
     leader = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ownedCatteries')

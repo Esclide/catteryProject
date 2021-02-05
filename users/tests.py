@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 
 
 class UsersManagersTests(TestCase):
-    def test_create_user(self):
+    def createUser(self):
         userModel = get_user_model()
         user = userModel.objects.create_user(username='firstUser', email='user@yandex.ru', password='Pa$$w0rd', first_name='Anna',
                                              last_name='Loginova')
@@ -16,7 +16,7 @@ class UsersManagersTests(TestCase):
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
 
-    def test_create_superuser(self):
+    def createSuperuser(self):
         userModel = get_user_model()
         admin_user = userModel.objects.create_superuser(username='firstSuperuser', email='admin@yandex.ru',
                                                         password='Pa$$w0rd', first_name='Liza', last_name='Smith')
