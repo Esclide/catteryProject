@@ -1,29 +1,43 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from faker import Faker
 
 
-class UsersManagersTests(TestCase):
-    def createUser(self):
-        userModel = get_user_model()
-        user = userModel.objects.create_user(username='firstUser', email='user@yandex.ru', password='Pa$$w0rd', first_name='Anna',
-                                             last_name='Loginova')
-        self.assertEqual(user.username, 'firstUser')
-        self.assertEqual(user.email, 'user@yandex.ru')
-        self.assertEqual(user.first_name, 'Anna')
-        self.assertEqual(user.last_name, 'Loginova')
+class UserTests(TestCase):
+    def create_user(self):
+        fake = Faker()
+        username = fake.name()
+        email = fake.email()
+        password = fake.password()
+        first_name = fake.first_name()
+        last_name = fake.last_name()
+
+        user = get_user_model().objects.create_user(username, email, password, first_name, last_name)
+        self.assertEqual(user.username, username)
+        self.assertEqual(user.email, email)
+        self.assertEqual(user.first_name, first_name)
+        self.assertEqual(user.last_name, last_name)
 
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
 
-    def createSuperuser(self):
-        userModel = get_user_model()
-        admin_user = userModel.objects.create_superuser(username='firstSuperuser', email='admin@yandex.ru',
-                                                        password='Pa$$w0rd', first_name='Liza', last_name='Smith')
-        self.assertEqual(admin_user.email, 'admin@yandex.ru')
-        self.assertEqual(admin_user.first_name, 'Liza')
-        self.assertEqual(admin_user.last_name, 'Smith')
+        return user
 
-        self.assertTrue(admin_user.is_active)
-        self.assertTrue(admin_user.is_staff)
-        self.assertTrue(admin_user.is_superuser)
+    def create_superuser(self):
+        fake = Faker()
+        username = fake.name()
+        email = fake.email()
+        password = fake.password()
+        first_name = fake.first_name()
+        last_name = fake.last_name()
+
+        superuser = get_user_model().objects.create_superuser(username, email, password, first_name, last_name)
+        self.assertEqual(superuser.username, username)
+        self.assertEqual(superuser.email, email)
+        self.assertEqual(superuser.first_name, first_name)
+        self.assertEqual(superuser.last_name, last_name)
+
+        self.assertTrue(superuser.is_active)
+        self.assertTrue(superuser.is_staff)
+        self.assertTrue(superuser.is_superuser)
