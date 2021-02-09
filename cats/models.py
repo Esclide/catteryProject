@@ -20,12 +20,12 @@ class Cat(models.Model):
     mother = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='motherChildCats', null=True, blank=True)
     father = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='fatherChildCats', null=True, blank=True)
     color = models.CharField(max_length=30, blank=True)
-    birthDate = models.DateField()
-    abilityToReproduce = models.BooleanField(default=True)
+    birth_date = models.DateField()
+    ability_to_reproduce = models.BooleanField(default=True)
     description = models.CharField(max_length=500, null=True, blank=True)
-    isAlive = models.BooleanField(default=True)
-    isDeleted = models.BooleanField(default=False)
-    deletionDate = models.DateTimeField(null=True, blank=True)
+    is_alive = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
+    deletion_date = models.DateTimeField(null=True, blank=True)
 
 
 class Attachment(models.Model):

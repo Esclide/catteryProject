@@ -1,22 +1,26 @@
+from django.contrib.auth.models import User
 from django.test import TestCase
-from django.contrib.auth import get_user_model
 from faker import Faker
 
 
 class UserTests(TestCase):
-    def create_user(self):
-        fake = Faker()
-        username = fake.name()
-        email = fake.email()
-        password = fake.password()
-        first_name = fake.first_name()
-        last_name = fake.last_name()
+    fake = Faker()
 
-        user = get_user_model().objects.create_user(username, email, password, first_name, last_name)
-        self.assertEqual(user.username, username)
-        self.assertEqual(user.email, email)
-        self.assertEqual(user.first_name, first_name)
-        self.assertEqual(user.last_name, last_name)
+    def test_create_user(self):
+        user_fields = {
+            'username': self.fake.name(),
+            'email': self.fake.email(),
+            'password': self.fake.password(),
+            'first_name': self.fake.first_name(),
+            'last_name': self.fake.last_name(),
+        }
+        user = User.objects.create_user(**user_fields)
+
+        for field, value in user_fields.items():
+            if field != 'password':
+                self.assertEqual(getattr(user, field), value)
+            else:
+                self.assertTrue(user.check_password(user_fields['password']))
 
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_staff)
@@ -24,19 +28,21 @@ class UserTests(TestCase):
 
         return user
 
-    def create_superuser(self):
-        fake = Faker()
-        username = fake.name()
-        email = fake.email()
-        password = fake.password()
-        first_name = fake.first_name()
-        last_name = fake.last_name()
+    def test_create_superuser(self):
+        user_fields = {
+            'username': self.fake.name(),
+            'email': self.fake.email(),
+            'password': self.fake.password(),
+            'first_name': self.fake.first_name(),
+            'last_name': self.fake.last_name(),
+        }
+        superuser = User.objects.create_superuser(**user_fields)
 
-        superuser = get_user_model().objects.create_superuser(username, email, password, first_name, last_name)
-        self.assertEqual(superuser.username, username)
-        self.assertEqual(superuser.email, email)
-        self.assertEqual(superuser.first_name, first_name)
-        self.assertEqual(superuser.last_name, last_name)
+        for field, value in user_fields.items():
+            if field != 'password':
+                self.assertEqual(getattr(superuser, field), value)
+            else:
+                self.assertTrue(superuser.check_password(user_fields['password']))
 
         self.assertTrue(superuser.is_active)
         self.assertTrue(superuser.is_staff)

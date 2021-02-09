@@ -12,7 +12,7 @@ class BaseReview(models.Model):
         abstract = True
 
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sentReviews')
-    creationDate = models.DateTimeField(default=timezone.now)
+    creation_date = models.DateTimeField(default=timezone.now)
     description = models.CharField(max_length=500, null=True, blank=True)
     rate = models.PositiveIntegerField(
         validators=[
@@ -20,8 +20,8 @@ class BaseReview(models.Model):
             MinValueValidator(0)
         ]
      )
-    isDeleted = models.BooleanField(default=False)
-    deletionDate = models.DateTimeField(null=True, blank=True)
+    is_deleted = models.BooleanField(default=False)
+    deletion_date = models.DateTimeField(null=True, blank=True)
 
 
 class CatteryReview(BaseReview):
@@ -42,8 +42,8 @@ class BreedReview(BaseReview):
 class Message(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sentMessages')
     recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='gottenMessages')
-    catteryAdvertisement = models.ForeignKey(CatteryAdvertisement, on_delete=models.CASCADE, related_name='replies', null=True, blank=True)
-    generalAdvertisement = models.ForeignKey(GeneralAdvertisement, on_delete=models.CASCADE, related_name='replies', null=True, blank=True)
-    isViewed = models.BooleanField(default=False)
-    creationDate = models.DateTimeField(default=timezone.now)
-    viewedDate = models.DateTimeField(null=True, blank=True)
+    cattery_advertisement = models.ForeignKey(CatteryAdvertisement, on_delete=models.CASCADE, related_name='replies', null=True, blank=True)
+    general_advertisement = models.ForeignKey(GeneralAdvertisement, on_delete=models.CASCADE, related_name='replies', null=True, blank=True)
+    is_viewed = models.BooleanField(default=False)
+    creation_date = models.DateTimeField(default=timezone.now)
+    viewed_date = models.DateTimeField(null=True, blank=True)
