@@ -1,11 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
-
-
-class Breed(models.Model):
-    name = models.CharField(max_length=30, blank=True)
-    description = models.CharField(max_length=500, blank=True)
-    image = models.ImageField(upload_to='breeds', default='breeds/default.png')
+from catteries.models import Cattery, Breed
 
 
 class Cat(models.Model):
@@ -14,23 +9,23 @@ class Cat(models.Model):
         ('F', 'Female'),
     )
 
-    name = models.CharField(max_length=30)
-    title = models.CharField(max_length=30, blank=True)
-    city = models.CharField(max_length=30, blank=True)
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=50, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     cattery = models.ForeignKey(Cattery, on_delete=models.SET_NULL, related_name='cats', null=True, blank=True)
     breeder = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='bredCats', null=True, blank=True)
     breed = models.ForeignKey(Breed, on_delete=models.SET_NULL, related_name='cats', null=True, blank=True)
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='ownCats', null=True, blank=True)
-    mother = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='childCats', null=True, blank=True)
-    father = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='childCats', null=True, blank=True)
+    mother = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='motherChildCats', null=True, blank=True)
+    father = models.ForeignKey('self', on_delete=models.SET_NULL, related_name='fatherChildCats', null=True, blank=True)
     color = models.CharField(max_length=30, blank=True)
-    birthDate = models.DateField()
-    abilityToReproduce = models.BooleanField(default=True)
+    birth_date = models.DateField()
+    ability_to_reproduce = models.BooleanField(default=True)
     description = models.CharField(max_length=500, null=True, blank=True)
-    isAlive = models.BooleanField(default=True)
-    isDeleted = models.BooleanField(default=False)
-    deletionDate = models.DateTimeField(null=True, blank=True)
+    is_alive = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
+    deletion_date = models.DateTimeField(null=True, blank=True)
 
 
 class Attachment(models.Model):

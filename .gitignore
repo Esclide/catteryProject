@@ -10,6 +10,7 @@ __pycache__/
 # C extensions
 *.so
 
+
 # Distribution / packaging
 .Python
 build/
@@ -130,8 +131,7 @@ venv.bak/
 dmypy.json
 
 # Pyre type checker
-<<<<<<< HEAD
 .pyre/
-=======
-.pyre/
->>>>>>> f38ca65 (feat #1: create base structure for project)
+
+
+*/migrations/

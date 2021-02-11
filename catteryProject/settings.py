@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'cats',
-    'catteries'
+    'catteries',
+    'advertisement',
+    'communication'
 ]
 
 MIDDLEWARE = [
@@ -114,7 +116,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC+3'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 

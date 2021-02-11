@@ -1,29 +1,65 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
+from faker import Faker
+from users.models import *
+import tempfile
 
 
-class UsersManagersTests(TestCase):
+class UserModelTests(TestCase):
+    fake = Faker()
+
     def test_create_user(self):
-        userModel = get_user_model()
-        user = userModel.objects.create_user(username='firstUser', email='user@yandex.ru', password='Pa$$w0rd', first_name='Anna',
-                                             last_name='Loginova')
-        self.assertEqual(user.username, 'firstUser')
-        self.assertEqual(user.email, 'user@yandex.ru')
-        self.assertEqual(user.first_name, 'Anna')
-        self.assertEqual(user.last_name, 'Loginova')
+        user_fields = {
+            'username': self.fake.name(),
+            'email': self.fake.email(),
+            'password': self.fake.password(),
+            'first_name': self.fake.first_name(),
+            'last_name': self.fake.last_name(),
+        }
+        user = User.objects.create_user(**user_fields)
+
+        for field, value in user_fields.items():
+            if field != 'password':
+                self.assertEqual(getattr(user, field), value)
+            else:
+                self.assertTrue(user.check_password(user_fields['password']))
 
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
 
-    def test_create_superuser(self):
-        userModel = get_user_model()
-        admin_user = userModel.objects.create_superuser(username='firstSuperuser', email='admin@yandex.ru',
-                                                        password='Pa$$w0rd', first_name='Liza', last_name='Smith')
-        self.assertEqual(admin_user.email, 'admin@yandex.ru')
-        self.assertEqual(admin_user.first_name, 'Liza')
-        self.assertEqual(admin_user.last_name, 'Smith')
+        return user
 
-        self.assertTrue(admin_user.is_active)
-        self.assertTrue(admin_user.is_staff)
-        self.assertTrue(admin_user.is_superuser)
+    def test_create_superuser(self):
+        user_fields = {
+            'username': self.fake.name(),
+            'email': self.fake.email(),
+            'password': self.fake.password(),
+            'first_name': self.fake.first_name(),
+            'last_name': self.fake.last_name(),
+        }
+        superuser = User.objects.create_superuser(**user_fields)
+
+        for field, value in user_fields.items():
+            if field != 'password':
+                self.assertEqual(getattr(superuser, field), value)
+            else:
+                self.assertTrue(superuser.check_password(user_fields['password']))
+
+        self.assertTrue(superuser.is_active)
+        self.assertTrue(superuser.is_staff)
+        self.assertTrue(superuser.is_superuser)
+
+    def test_create_profile(self):
+        profile_fields = {
+            'user': self.test_create_user(),
+            'profile_image': tempfile.NamedTemporaryFile(suffix=".jpg").name,
+            'phone': self.fake.phone_number(),
+            'country': self.fake.country(),
+            'city': self.fake.city(),
+        }
+        profile = Profile.objects.create(**profile_fields)
+
+        for field, value in profile_fields.items():
+            self.assertEqual(getattr(profile, field), value)
+
+        return profile
