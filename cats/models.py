@@ -9,9 +9,9 @@ class Cat(models.Model):
         ('F', 'Female'),
     )
 
-    name = models.CharField(max_length=30)
-    title = models.CharField(max_length=30, blank=True)
-    city = models.CharField(max_length=30, blank=True)
+    name = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=50, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     cattery = models.ForeignKey(Cattery, on_delete=models.SET_NULL, related_name='cats', null=True, blank=True)
     breeder = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='bredCats', null=True, blank=True)

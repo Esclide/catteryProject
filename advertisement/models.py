@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from cats.models import Breed
 from catteries.models import Cattery
+from cats.models import Cat
 from django.utils import timezone
 
 
@@ -13,29 +14,20 @@ class BaseAdvertisement(models.Model):
         (0, 'sale'),
         (1, 'knitting'),
     )
-    LEVEL_CHOICES = (
-        (0, 'public'),
-        (1, 'cattery'),
-    )
     type = models.IntegerField(choices=TYPE_CHOICES)
-    level = models.IntegerField(choices=TYPE_CHOICES, default=0)
-    title = models.CharField(max_length=30)
+    title = models.CharField(max_length=100)
     description = models.CharField(max_length=500, null=True, blank=True)
     breed = models.ForeignKey(Breed, on_delete=models.SET_NULL, null=True, blank=True, related_name='advertisements')
     color = models.CharField(max_length=30, null=True, blank=True)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='advertisements')
-    # ToDo: check how it works
-    cats = models.ManyToManyField(Breed, blank=True)
-    isDeleted = models.BooleanField(default=False)
-    deletionDate = models.DateTimeField(null=True, blank=True)
+    cats = models.ManyToManyField(Cat, blank=True)
+    is_deleted = models.BooleanField(default=False)
+    deletion_date = models.DateTimeField(null=True, blank=True)
     price = models.IntegerField()
-    creationDate = models.DateTimeField(default=timezone.now)
+    creation_date = models.DateTimeField(default=timezone.now)
     rating = models.IntegerField(null=True, blank=True)
-
-
-class Document(models.Model):
-    attachment = models.ImageField(upload_to='advertisement_attachments')
-    cattery = models.ForeignKey(Cattery, on_delete=models.CASCADE, related_name='advertisementAttachments')
+    country = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
 
 
 class GeneralAdvertisement(BaseAdvertisement):
@@ -51,4 +43,8 @@ class CatteryAdvertisement(BaseAdvertisement):
                               related_name='catteryAdvertisements')
     cattery = models.ForeignKey(Cattery, on_delete=models.CASCADE, related_name='advertisements', null=True, blank=True)
 
+class Document(models.Model):
+    attachment = models.ImageField(upload_to='advertisement_attachments')
+    general_advertisement = models.ForeignKey(GeneralAdvertisement, on_delete=models.CASCADE, related_name='advertisementAttachments', null=True, blank=True)
+    cattery_advertisement = models.ForeignKey(CatteryAdvertisement, on_delete=models.CASCADE, related_name='advertisementAttachments', null=True, blank=True)
 

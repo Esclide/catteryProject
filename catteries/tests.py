@@ -1,16 +1,16 @@
 from django.test import TestCase
 from catteries.models import *
 from faker import Faker
-from users.tests import UserTests
+from users.tests import UserModelTests
 import tempfile
 
 
-class CatteriesTests(TestCase):
+class CatteryModelTests(TestCase):
     fake = Faker()
 
     def test_create_cattery(self):
         cattery_fields = {
-            'leader': UserTests.test_create_user(UserTests()),
+            'leader': UserModelTests.test_create_user(UserModelTests()),
             'name': self.fake.company(),
             'membership_fee': self.fake.random.randint(0, 1000),
             'country': self.fake.country(),
@@ -33,6 +33,7 @@ class CatteriesTests(TestCase):
         breed_fields = {
             'name': self.fake.name(),
             'description': self.fake.text(),
+            'image': tempfile.NamedTemporaryFile(suffix=".jpg").name,
         }
         breed = Breed.objects.create(**breed_fields)
         for field, value in breed_fields.items():
@@ -42,7 +43,7 @@ class CatteriesTests(TestCase):
 
     def test_create_user_in_cattery(self):
         user_in_cattery_fields = {
-            'user': UserTests.test_create_user(UserTests()),
+            'user': UserModelTests.test_create_user(UserModelTests()),
             'cattery': self.test_create_cattery(),
             'status': self.fake.random.randint(0, 2),
             'is_admin': False,
@@ -61,7 +62,7 @@ class CatteriesTests(TestCase):
 
     def test_create_application_to_cattery(self):
         application_to_cattery_fields = {
-            'user': UserTests.test_create_user(UserTests()),
+            'user': UserModelTests.test_create_user(UserModelTests()),
             'cattery': self.test_create_cattery(),
             'message': self.fake.pystr(0, 500),
 
@@ -77,7 +78,7 @@ class CatteriesTests(TestCase):
 
     def test_create_announcement(self):
         announcement_fields = {
-            'creator': UserTests.test_create_user(UserTests()),
+            'creator': UserModelTests.test_create_user(UserModelTests()),
             'cattery': self.test_create_cattery(),
             'text': self.fake.text(),
             'photo': tempfile.NamedTemporaryFile(suffix=".jpg").name

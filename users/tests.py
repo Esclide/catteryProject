@@ -1,9 +1,10 @@
-from django.contrib.auth.models import User
 from django.test import TestCase
 from faker import Faker
+from users.models import *
+import tempfile
 
 
-class UserTests(TestCase):
+class UserModelTests(TestCase):
     fake = Faker()
 
     def test_create_user(self):
@@ -47,3 +48,18 @@ class UserTests(TestCase):
         self.assertTrue(superuser.is_active)
         self.assertTrue(superuser.is_staff)
         self.assertTrue(superuser.is_superuser)
+
+    def test_create_profile(self):
+        profile_fields = {
+            'user': self.test_create_user(),
+            'profile_image': tempfile.NamedTemporaryFile(suffix=".jpg").name,
+            'phone': self.fake.phone_number(),
+            'country': self.fake.country(),
+            'city': self.fake.city(),
+        }
+        profile = Profile.objects.create(**profile_fields)
+
+        for field, value in profile_fields.items():
+            self.assertEqual(getattr(profile, field), value)
+
+        return profile
