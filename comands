@@ -1,0 +1,6 @@
+python manage.py test
+
+python manage.py createsuperuser --username=anna --email=anna@mail.ru
+
+python manage.py makemigrations
+python manage.py migrate

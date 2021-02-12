@@ -84,7 +84,7 @@ class CatteryModelTests(TestCase):
             'photo': tempfile.NamedTemporaryFile(suffix=".jpg").name
 
         }
-        announcement = Announcements.objects.create(**announcement_fields)
+        announcement = Announcement.objects.create(**announcement_fields)
 
         for field, value in announcement_fields.items():
             self.assertEqual(getattr(announcement, field), value)
@@ -97,20 +97,20 @@ class CatteryModelTests(TestCase):
 
         return announcement
 
+    def test_create_document(self):
+        document_fields = {
+            'attachment': tempfile.NamedTemporaryFile(suffix=".jpg").name,
+            'cattery': self.test_create_cattery(),
 
-def test_create_document(self):
-    document_fields = {
-        'attachment': tempfile.NamedTemporaryFile(suffix=".jpg").name,
-        'cattery': self.test_create_cattery(),
+        }
+        announcement = Document.objects.create(**document_fields)
 
-    }
-    announcement = Document.objects.create(**document_fields)
+        for field, value in document_fields.items():
+            self.assertEqual(getattr(announcement, field), value)
 
-    for field, value in document_fields.items():
-        self.assertEqual(getattr(announcement, field), value)
+        self.assertEqual(announcement.creation_date.date(), timezone.now().date())
 
-    self.assertEqual(announcement.creation_date.date(), timezone.now().date())
-    print(document_fields['cattery'])
+        return announcement
 
-    return announcement
+
 

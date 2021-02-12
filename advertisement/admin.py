@@ -1,3 +1,5 @@
 from django.contrib import admin
+from advertisement.models import *
 
-# Register your models here.
+admin.site.register(GeneralAdvertisement)
+admin.site.register(Document)

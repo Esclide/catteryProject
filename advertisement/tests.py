@@ -87,7 +87,6 @@ class AdvertisementModelTests(TestCase):
         general_advertisement.cats.add(second_cat[0].id)
 
         self.assertEqual(general_advertisement.cats.count(), 2)
-        print(general_advertisement.cats)
 
         return general_advertisement
 

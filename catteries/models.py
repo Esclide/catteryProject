@@ -62,7 +62,7 @@ class ApplicationToCattery(models.Model):
     creation_date = models.DateTimeField(default=timezone.now)
 
 
-class Announcements(models.Model):
+class Announcement(models.Model):
     ANNOUNCEMENT_STATUS_CHOICES = (
         (0, 'Active'),
         (1, 'Deleted'),
