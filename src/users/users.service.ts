@@ -13,12 +13,25 @@ export class UsersService {
         private usersRepository: Repository<User>
     ) {}
 
-    getAllUsers() {
-        return this.usersRepository.find();
+    async getAllUsers() {
+        const users = await this.usersRepository.find()
+        return users.map((user) => {
+            user.password = undefined;
+            return user
+        });
     }
 
     async getUserById(id: string) {
         const user = await this.usersRepository.findOne(id);
+        if (user) {
+            user.password = undefined;
+            return user;
+        }
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    async getUserByEmail(email: string) {
+        const user = await this.usersRepository.findOne({email});
         if (user) {
             return user;
         }
@@ -80,14 +93,14 @@ export class UsersService {
         const notNullableFields = ['email', 'username', 'firstName', 'lastName', 'birthDate']
         for (const field of notNullableFields){
             if (!createUserDto[field])
-                throw new HttpException(`Field ${field} required`, HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new HttpException(`Field ${field} required`, HttpStatus.BAD_REQUEST);
         }
     }
 
     async checkUniqueFields(createUserDto: CreateUserDto): Promise<void> {
         if (await this.checkIfEmailUses(createUserDto.email))
-            throw new HttpException('Email already in use', HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
         if (await this.checkIfUsernameUses(createUserDto.username))
-            throw new HttpException('Username already in use', HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new HttpException('User with that username already exists', HttpStatus.BAD_REQUEST);
     }
 }

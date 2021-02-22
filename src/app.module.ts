@@ -7,6 +7,7 @@ import {AdvertisementsModule} from "./advertisements/advertisements.module";
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
 import {DatabaseModule} from "./database/database.module";
+import {AuthModule} from "./auth/auth.module";
 
 @Module({
   imports: [
@@ -19,7 +20,12 @@ import {DatabaseModule} from "./database/database.module";
         POSTGRES_DB: Joi.string().required(),
         PORT: Joi.number(),
       })
-    }), UsersModule, CatsModule, AdvertisementsModule, DatabaseModule
+    }),
+    UsersModule,
+    CatsModule,
+    AdvertisementsModule,
+    DatabaseModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
