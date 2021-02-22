@@ -10,7 +10,7 @@ export class Cat {
     @Column({})
     name: string;
 
-    @Column({})
+    @Column({nullable: true})
     title: string;
 
     @Column({enum: ['male', 'female']})

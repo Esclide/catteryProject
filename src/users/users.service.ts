@@ -1,9 +1,8 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import { User } from './entities/user.entity';
-import {CreateUserDto} from "./dto/create-user-dto";
 import {Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
-import {UpdateUserDto} from "./dto/update-user-dto";
+import {CreateUserDto, UpdateUserDto} from "./dto/user-dto";
 
 const mediaFolder = '../media/';
 
@@ -20,6 +19,22 @@ export class UsersService {
 
     async getUserById(id: string) {
         const user = await this.usersRepository.findOne(id);
+        if (user) {
+            return user;
+        }
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    async getCatsByUserId(id: string) {
+        const user = await this.usersRepository.findOne(id, {relations:['bredCats', 'ownedCats']});
+        if (user) {
+            return user;
+        }
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    async getFullUserInfo(id: string) {
+        const user = await this.usersRepository.findOne(id, {relations:['bredCats', 'ownedCats', 'createdAdvertisements']});
         if (user) {
             return user;
         }
