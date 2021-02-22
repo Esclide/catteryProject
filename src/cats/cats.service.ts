@@ -37,12 +37,18 @@ export class BreedsService {
   }
 
   async createBreed(createBreedDto: CreateBreedDto) {
-    await this.checkUniqueFields(createBreedDto);
-    await this.checkNotNullableFields(createBreedDto);
-    if (createBreedDto.image) createBreedDto.image = `${mediaFolder}${createBreedDto.image}`
-    const newBreed = await this.breedsRepository.create(createBreedDto);
-    await this.breedsRepository.save(newBreed);
-    return newBreed;
+    try {
+      await this.checkNotNullableFields(createBreedDto);
+      if (createBreedDto.image) createBreedDto.image = `${mediaFolder}${createBreedDto.image}`
+      const newBreed = await this.breedsRepository.create(createBreedDto);
+      await this.breedsRepository.save(newBreed);
+      return newBreed;
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.UniqueViolation) {
+        throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   async updateBreed(updateBreedDto: UpdateBreedDto) {
@@ -65,18 +71,13 @@ export class BreedsService {
     const notNullableFields = ['name']
     for (const field of notNullableFields){
       if (!createBreedDto[field])
-        throw new HttpException(`Field ${field} required`, HttpStatus.INTERNAL_SERVER_ERROR);
+        throw new HttpException(`Field ${field} required`, HttpStatus.BAD_REQUEST);
     }
   }
 
   async checkIfNameUses(name: string) {
     const breed = await this.breedsRepository.findOne({ name })
     return !!breed;
-  }
-
-  async checkUniqueFields(createBreedDto: CreateBreedDto): Promise<void> {
-    if (await this.checkIfNameUses(createBreedDto.name))
-      throw new HttpException('Name already in use', HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }
 
@@ -85,9 +86,9 @@ export class CatsService {
 
   constructor(
       @InjectRepository(Cat)
-      private catsRepository: Repository<Cat>,
-      private usersService: UsersService,
-      private breedsService: BreedsService
+      private readonly catsRepository: Repository<Cat>,
+      private readonly usersService: UsersService,
+      private readonly breedsService: BreedsService
   ) {}
 
   getAllCats() {
@@ -144,7 +145,7 @@ export class CatsService {
     const notNullableFields = ['name', 'gender', 'breederId', 'ownerId', 'breedId', 'color', 'birthDate']
     for (const field of notNullableFields){
       if (!createCatDto[field])
-        throw new HttpException(`Field ${field} required`, HttpStatus.INTERNAL_SERVER_ERROR);
+        throw new HttpException(`Field ${field} required`, HttpStatus.BAD_REQUEST);
     }
   }
 }
