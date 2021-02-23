@@ -1,17 +1,29 @@
-import {User} from "../../users/entities/user.entity";
-import {Cat} from "../entities/cat.entity";
-import {Breed} from "../entities/breed.entity";
-import {Column} from "typeorm";
+import { IsNotEmpty, IsOptional, IsString} from "class-validator";
 
 export class CreateBreedDto {
+    @IsString()
+    @IsNotEmpty()
     name: string;
+
+    @IsString()
+    @IsOptional()
     description?: string;
+
+    @IsString()
+    @IsOptional()
     image?: string;
 }
 
 export class UpdateBreedDto {
-    id: string;
+    @IsString()
+    @IsOptional()
     name: string;
+
+    @IsString()
+    @IsOptional()
     description?: string;
+
+    @IsString()
+    @IsOptional()
     image?: string;
 }

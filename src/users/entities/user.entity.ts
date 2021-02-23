@@ -45,6 +45,12 @@ export class User {
   @Column({ default: `${mediaFolder}/default` })
   image: string;
 
+  @Column({default: false})
+  isDeleted: Boolean;
+
+  @Column({ nullable: true })
+  deletionDate: Date;
+
   @OneToMany(() => Cat, (cat) => cat.breeder, {nullable: true})
   bredCats: Cat[];
 

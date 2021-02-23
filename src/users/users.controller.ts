@@ -3,6 +3,7 @@ import {UsersService} from "./users.service";
 import {User} from "./entities/user.entity";
 import {CreateUserDto, UpdateUserDto} from "./dto/user-dto";
 import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
+import {GetOneParam} from '../../utils/validators/get-one-param.validator'
 
 
 @Controller('users')
@@ -16,7 +17,7 @@ export class UsersController {
 
     @Get(':id')
     @UseGuards(JwtAuthGuard)
-    getUserById(@Param('id') id: string): Promise<User> {
+    getUserById(@Param() {id}: GetOneParam): Promise<User> {
         return this.usersService.getUserById(id);
     }
 
@@ -25,10 +26,10 @@ export class UsersController {
         return this.usersService.createUser(createUserDto);
     }
 
-    @Put()
+    @Put(':id')
     @UseGuards(JwtAuthGuard)
-    updateUser(@Body() updateUserDto: UpdateUserDto): Promise<User> {
-        return this.usersService.updateUser(updateUserDto);
+    updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
+        return this.usersService.updateUser(id, updateUserDto);
     }
 
     @Delete(':id')

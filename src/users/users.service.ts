@@ -55,17 +55,17 @@ export class UsersService {
     }
 
     async createUser(createUserDto: CreateUserDto) {
-        await this.checkUniqueFields(createUserDto);
-        await this.checkNotNullableFields(createUserDto);
+        await this.checkUniqueFieldsForCreate(createUserDto);
         if (createUserDto.image) createUserDto.image = `${mediaFolder}${createUserDto.image}`
         const newUser = await this.usersRepository.create(createUserDto);
         await this.usersRepository.save(newUser);
         return newUser;
     }
 
-    async updateUser(updateUserDto: UpdateUserDto) {
-        await this.usersRepository.update(updateUserDto.id, updateUserDto);
-        const updatedUser = await this.usersRepository.findOne(updateUserDto.id);
+    async updateUser(id: string, updateUserDto: UpdateUserDto) {
+        await this.checkUniqueFieldsForUpdate(updateUserDto);
+        await this.usersRepository.update(id, updateUserDto);
+        const updatedUser = await this.usersRepository.findOne(id);
         if (updatedUser) {
             return updatedUser
         }
@@ -89,18 +89,18 @@ export class UsersService {
         return !!user;
     }
 
-    async checkNotNullableFields(createUserDto: CreateUserDto): Promise<void> {
-        const notNullableFields = ['email', 'username', 'firstName', 'lastName', 'birthDate']
-        for (const field of notNullableFields){
-            if (!createUserDto[field])
-                throw new HttpException(`Field ${field} required`, HttpStatus.BAD_REQUEST);
-        }
-    }
 
-    async checkUniqueFields(createUserDto: CreateUserDto): Promise<void> {
+    async checkUniqueFieldsForCreate(createUserDto: CreateUserDto): Promise<void> {
         if (await this.checkIfEmailUses(createUserDto.email))
             throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
         if (await this.checkIfUsernameUses(createUserDto.username))
+            throw new HttpException('User with that username already exists', HttpStatus.BAD_REQUEST);
+    }
+
+    async checkUniqueFieldsForUpdate(updateUserDto: UpdateUserDto): Promise<void> {
+        if (updateUserDto.email && await this.checkIfEmailUses(updateUserDto.email))
+            throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
+        if (updateUserDto.username && await this.checkIfUsernameUses(updateUserDto.username))
             throw new HttpException('User with that username already exists', HttpStatus.BAD_REQUEST);
     }
 }
