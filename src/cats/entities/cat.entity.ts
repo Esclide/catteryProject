@@ -48,6 +48,9 @@ export class Cat {
 
     @Column({default: false})
     isDeleted: Boolean;
+
+    @Column({ nullable: true })
+    deletionDate: Date;
 }
 
 @Entity()

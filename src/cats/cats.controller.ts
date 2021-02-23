@@ -3,6 +3,8 @@ import {BreedsService, CatsService} from './cats.service';
 import {CreateCatDto, UpdateCatDto} from "./dto/cat-dto";
 import {Cat} from "./entities/cat.entity";
 import {Breed} from "./entities/breed.entity";
+import {CreateBreedDto, UpdateBreedDto} from "./dto/breed-dto";
+import {GetOneParam} from "../../utils/validators/get-one-param.validator";
 
 @Controller('cats')
 export class CatsController {
@@ -14,7 +16,7 @@ export class CatsController {
   }
 
   @Get(':id')
-  getCatById(@Param('id') id: string): Promise<Cat> {
+  getCatById(@Param() {id}: GetOneParam): Promise<Cat> {
     return this.catsService.getCatById(id);
   }
 
@@ -23,9 +25,9 @@ export class CatsController {
     return this.catsService.createCat(createCatDto);
   }
 
-  @Put()
-  updateCat(@Body() updateCatDto: UpdateCatDto): Promise<Cat> {
-    return this.catsService.updateCat(updateCatDto);
+  @Put(':id')
+  updateCat(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto): Promise<Cat> {
+    return this.catsService.updateCat(id, updateCatDto);
   }
 
   @Delete(':id')
@@ -44,18 +46,18 @@ export class BreedsController {
   }
 
   @Get(':id')
-  getBreedById(@Param('id') id: string): Promise<Breed> {
+  getBreedById(@Param() {id}: GetOneParam): Promise<Breed> {
     return this.breedsService.getBreedById(id);
   }
 
   @Post()
-  createBreed(@Body() createUserDto: CreateCatDto): Promise<Breed> {
-    return this.breedsService.createBreed(createUserDto);
+  createBreed(@Body() createBreedDto: CreateBreedDto): Promise<Breed> {
+    return this.breedsService.createBreed(createBreedDto);
   }
 
-  @Put()
-  updateBreed(@Body() updateUserDto: UpdateCatDto): Promise<Breed> {
-    return this.breedsService.updateBreed(updateUserDto);
+  @Put(':id')
+  updateBreed(@Param('id') id: string, @Body() updateBreedDto: UpdateBreedDto): Promise<Breed> {
+    return this.breedsService.updateBreed(id, updateBreedDto);
   }
 
   @Delete(':id')

@@ -6,6 +6,7 @@ import {Breed} from "./entities/breed.entity";
 import {CreateCatDto, UpdateCatDto} from "./dto/cat-dto";
 import {CreateBreedDto, UpdateBreedDto} from "./dto/breed-dto";
 import {UsersService} from "../users/users.service";
+import {PostgresErrorCode} from '../database/postgres-error-codes.enum'
 
 const mediaFolder = '../media/';
 
@@ -38,22 +39,28 @@ export class BreedsService {
 
   async createBreed(createBreedDto: CreateBreedDto) {
     try {
-      await this.checkNotNullableFields(createBreedDto);
       if (createBreedDto.image) createBreedDto.image = `${mediaFolder}${createBreedDto.image}`
       const newBreed = await this.breedsRepository.create(createBreedDto);
       await this.breedsRepository.save(newBreed);
       return newBreed;
     } catch (error) {
       if (error?.code === PostgresErrorCode.UniqueViolation) {
-        throw new HttpException('User with that email already exists', HttpStatus.BAD_REQUEST);
+        throw new HttpException('Breed with that name already exists', HttpStatus.BAD_REQUEST);
       }
       throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
-  async updateBreed(updateBreedDto: UpdateBreedDto) {
-    await this.breedsRepository.update(updateBreedDto.id, updateBreedDto);
-    const updatedCat = await this.breedsRepository.findOne(updateBreedDto.id);
+  async updateBreed(id: string, updateBreedDto: UpdateBreedDto) {
+    try {
+      await this.breedsRepository.update(id, updateBreedDto);
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.UniqueViolation) {
+        throw new HttpException('Breed with that name already exists', HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    const updatedCat = await this.getBreedById(id);
     if (updatedCat) {
       return updatedCat
     }
@@ -65,19 +72,6 @@ export class BreedsService {
     if (!deleteResponse.affected) {
       throw new HttpException('Breed not found', HttpStatus.NOT_FOUND);
     }
-  }
-
-  async checkNotNullableFields(createBreedDto: CreateBreedDto): Promise<void> {
-    const notNullableFields = ['name']
-    for (const field of notNullableFields){
-      if (!createBreedDto[field])
-        throw new HttpException(`Field ${field} required`, HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  async checkIfNameUses(name: string) {
-    const breed = await this.breedsRepository.findOne({ name })
-    return !!breed;
   }
 }
 
@@ -116,18 +110,19 @@ export class CatsService {
   }
 
   async createCat(createCatDto: CreateCatDto) {
-    await this.checkNotNullableFields(createCatDto);
     const newCat = await this.catsRepository.create(createCatDto);
-    newCat.owner = await this.usersService.getUserById(createCatDto.ownerId)
-    newCat.breeder = await this.usersService.getUserById(createCatDto.breederId)
-    newCat.breed = await this.breedsService.getBreedById(createCatDto.breedId)
+    newCat.owner = await this.usersService.getUserById(createCatDto.ownerId);
+    newCat.breeder = await this.usersService.getUserById(createCatDto.breederId);
+    newCat.breed = await this.breedsService.getBreedById(createCatDto.breedId);
+    if (createCatDto.motherId) newCat.mother = await this.getCatById(createCatDto.motherId);
+    if (createCatDto.fatherId) newCat.father = await this.getCatById(createCatDto.fatherId);
     await this.catsRepository.save(newCat);
     return newCat;
   }
 
-  async updateCat(updateCatDto: UpdateCatDto) {
-    await this.catsRepository.update(updateCatDto.id, updateCatDto);
-    const updatedCat = await this.catsRepository.findOne(updateCatDto.id);
+  async updateCat(id: string, updateCatDto: UpdateCatDto) {
+    await this.catsRepository.update(id, updateCatDto);
+    const updatedCat = await this.catsRepository.findOne(id);
     if (updatedCat) {
       return updatedCat
     }
@@ -138,14 +133,6 @@ export class CatsService {
     const deleteResponse = await this.catsRepository.delete(id);
     if (!deleteResponse.affected) {
       throw new HttpException('Cat not found', HttpStatus.NOT_FOUND);
-    }
-  }
-
-  async checkNotNullableFields(createCatDto: CreateCatDto): Promise<void> {
-    const notNullableFields = ['name', 'gender', 'breederId', 'ownerId', 'breedId', 'color', 'birthDate']
-    for (const field of notNullableFields){
-      if (!createCatDto[field])
-        throw new HttpException(`Field ${field} required`, HttpStatus.BAD_REQUEST);
     }
   }
 }
