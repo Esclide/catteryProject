@@ -24,7 +24,6 @@ export class UsersService {
     async getUserById(id: string) {
         const user = await this.usersRepository.findOne(id);
         if (user) {
-            user.password = undefined;
             return user;
         }
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
