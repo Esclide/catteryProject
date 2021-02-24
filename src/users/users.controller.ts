@@ -21,7 +21,6 @@ export class UsersController {
         return this.usersService.getUserById(id);
     }
 
-    @Post()
     createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
         return this.usersService.createUser(createUserDto);
     }
@@ -33,6 +32,7 @@ export class UsersController {
     }
 
     @Delete(':id')
+    @UseGuards(JwtAuthGuard)
     async deleteUser(@Param('id') id: string): Promise<void> {
         return this.usersService.deleteUser(id);
     }

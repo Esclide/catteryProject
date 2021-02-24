@@ -17,6 +17,7 @@ export class AuthController {
         return this.authService.registerUser(createUserDto);
     }
 
+    @HttpCode(200)
     @UseGuards(LocalAuthGuard)
     @Post('login')
     async logIn(@Req() request: RequestForLogIn) {
@@ -25,7 +26,7 @@ export class AuthController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Get('profile')
+    @Get('current_user')
     getProfile(@Req() request) {
         return request.user;
     }
