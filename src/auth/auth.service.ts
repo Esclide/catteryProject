@@ -29,7 +29,7 @@ export class AuthService {
     public async getAuthenticatedUser(emailOrUsername: string, enteredPassword: string) {
         try {
             const user = await this.usersService.getUserByEmail(emailOrUsername);
-            await this.verifyPassword(enteredPassword, user.password);
+            await AuthService.verifyPassword(enteredPassword, user.password);
             user.password = undefined;
             return user;
         } catch (error) {
@@ -37,7 +37,7 @@ export class AuthService {
         }
     }
 
-    private async verifyPassword(enteredPassword: string, hashedPassword: string) {
+    private static async verifyPassword(enteredPassword: string, hashedPassword: string) {
         const isPasswordMatching = await bcrypt.compare(
             enteredPassword,
             hashedPassword
@@ -48,7 +48,7 @@ export class AuthService {
     }
 
     async login(user: any) {
-        const payload = { username: user.username, sub: user.userId };
+        const payload = { email: user.email, sub: user.userId };
         return {
             access_token: this.jwtService.sign(payload),
         };

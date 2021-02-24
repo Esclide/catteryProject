@@ -20,7 +20,6 @@ export class AuthController {
     @Post('login')
     async logIn(@Req() request: RequestForLogIn) {
         const user = request.user;
-        user.password = undefined;
         return this.authService.login(user);
     }
 

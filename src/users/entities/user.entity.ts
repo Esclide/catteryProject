@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Cat } from '../../cats/entities/cat.entity';
 import { Advertisement } from '../../advertisements/entities/advertisement.entity';
+import { Exclude } from 'class-transformer';
 
 const mediaFolder = '../media';
 
@@ -13,6 +14,7 @@ export class User {
   email: string;
 
   @Column({})
+  @Exclude()
   password: string;
 
   @Column({ unique: true })
@@ -48,6 +50,7 @@ export class User {
   @Column({default: false})
   isDeleted: Boolean;
 
+  @Exclude()
   @Column({ nullable: true })
   deletionDate: Date;
 

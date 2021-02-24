@@ -1,6 +1,7 @@
 import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import {User} from "../../users/entities/user.entity";
 import {Breed} from "./breed.entity";
+import {Exclude} from "class-transformer";
 
 @Entity()
 export class Cat {
@@ -50,6 +51,7 @@ export class Cat {
     isDeleted: Boolean;
 
     @Column({ nullable: true })
+    @Exclude()
     deletionDate: Date;
 }
 
