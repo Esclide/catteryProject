@@ -14,11 +14,11 @@ export class CreateCatDto {
     @IsEnum(['male', 'female'])
     gender: string;
 
-    @IsNumberString()
-    breederId: string
+    @IsString()
+    breederUsername: string
 
-    @IsNumberString()
-    ownerId: string
+    @IsString()
+    ownerUsername: string
 
     @IsNumberString()
     @IsOptional()
@@ -28,8 +28,8 @@ export class CreateCatDto {
     @IsOptional()
     fatherId?: string
 
-    @IsNumberString()
-    breedId: string
+    @IsString()
+    breedName: string
 
     @IsString()
     color: string;
@@ -64,13 +64,9 @@ export class UpdateCatDto {
     @IsOptional()
     gender: string;
 
-    @IsNumberString()
+    @IsString()
     @IsOptional()
-    breederId: string
-
-    @IsNumberString()
-    @IsOptional()
-    ownerId: string
+    ownerUsername: string
 
     @IsNumberString()
     @IsOptional()
@@ -80,9 +76,9 @@ export class UpdateCatDto {
     @IsOptional()
     fatherId?: string
 
-    @IsNumberString()
+    @IsString()
     @IsOptional()
-    breedId: string
+    breedName: string
 
     @IsString()
     @IsOptional()

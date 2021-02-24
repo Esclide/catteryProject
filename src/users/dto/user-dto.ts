@@ -1,6 +1,6 @@
 import {
     IsDateString,
-    IsEmail,
+    IsEmail, IsEmpty,
     IsMobilePhone,
     IsNotEmpty, IsOptional,
     IsString,
@@ -34,10 +34,13 @@ export class CreateUserDto {
 
     @IsDateString()
     @IsNotEmpty()
-    birthDate: Date;
+    birthDate: string;
+
+    @IsEmpty()
+    registrationDate?: string;
 
     @IsMobilePhone("ru-RU")
-    @IsNotEmpty()
+    @IsOptional()
     phone?: string;
 
     @IsString()
@@ -56,20 +59,20 @@ export class CreateUserDto {
 export class UpdateUserDto {
     @IsEmail()
     @IsOptional()
-    email: string;
+    email?: string;
 
     @IsString()
     @IsOptional()
-    username: string;
+    username?: string;
 
     @IsString()
     @MinLength(7)
     @IsOptional()
-    password: string;
+    password?: string;
 
     @IsString()
     @IsOptional()
-    firstName: string;
+    firstName?: string;
 
     @IsString()
     @IsOptional()
@@ -77,11 +80,11 @@ export class UpdateUserDto {
 
     @IsString()
     @IsOptional()
-    lastName: string;
+    lastName?: string;
 
     @IsDateString()
     @IsOptional()
-    birthDate: Date;
+    birthDate?: string;
 
     @IsMobilePhone("ru-RU")
     @IsOptional()
@@ -98,4 +101,10 @@ export class UpdateUserDto {
     @IsString()
     @IsOptional()
     image?: string;
+
+    @IsEmpty()
+    isDeleted?: boolean
+
+    @IsEmpty()
+    deletionDate?: string
 }

@@ -3,6 +3,7 @@ import { User } from './entities/user.entity';
 import {Repository} from "typeorm";
 import {InjectRepository} from "@nestjs/typeorm";
 import {CreateUserDto, UpdateUserDto} from "./dto/user-dto";
+import * as bcrypt from "bcrypt";
 
 const mediaFolder = '../media/';
 
@@ -16,14 +17,13 @@ export class UsersService {
     async getAllUsers() {
         const users = await this.usersRepository.find()
         return users.map((user) => {
-            user.password = undefined;
-            return user
+            if (!user.isDeleted) return user
         });
     }
 
     async getUserById(id: string) {
         const user = await this.usersRepository.findOne(id);
-        if (user) {
+        if (user && !(user.isDeleted)) {
             return user;
         }
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -31,7 +31,15 @@ export class UsersService {
 
     async getUserByEmail(email: string) {
         const user = await this.usersRepository.findOne({email});
-        if (user) {
+        if (user && !(user.isDeleted)) {
+            return user;
+        }
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    async getUserByUsername(username: string) {
+        const user = await this.usersRepository.findOne({username});
+        if (user && !(user.isDeleted)) {
             return user;
         }
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -39,7 +47,7 @@ export class UsersService {
 
     async getCatsByUserId(id: string) {
         const user = await this.usersRepository.findOne(id, {relations:['bredCats', 'ownedCats']});
-        if (user) {
+        if (user && !(user.isDeleted)) {
             return user;
         }
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -47,7 +55,7 @@ export class UsersService {
 
     async getFullUserInfo(id: string) {
         const user = await this.usersRepository.findOne(id, {relations:['bredCats', 'ownedCats', 'createdAdvertisements']});
-        if (user) {
+        if (user && !(user.isDeleted)) {
             return user;
         }
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -63,6 +71,10 @@ export class UsersService {
 
     async updateUser(id: string, updateUserDto: UpdateUserDto) {
         await this.checkUniqueFieldsForUpdate(updateUserDto);
+        if (updateUserDto.password) {
+            const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
+            updateUserDto.password = hashedPassword
+        }
         await this.usersRepository.update(id, updateUserDto);
         const updatedUser = await this.usersRepository.findOne(id);
         if (updatedUser) {
@@ -72,10 +84,7 @@ export class UsersService {
     }
 
     async deleteUser(id: string) {
-        const deleteResponse = await this.usersRepository.delete(id);
-        if (!deleteResponse.affected) {
-            throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-        }
+        await this.updateUser(id, {isDeleted: true, deletionDate: new Date().toISOString()})
     }
 
     async checkIfEmailUses(email: string) {
