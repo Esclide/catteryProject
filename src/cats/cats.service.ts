@@ -111,9 +111,9 @@ export class CatsService {
 
   async createCat(createCatDto: CreateCatDto) {
     const newCat = await this.catsRepository.create(createCatDto);
-    newCat.owner = await this.usersService.getUserById(createCatDto.ownerId);
-    newCat.breeder = await this.usersService.getUserById(createCatDto.breederId);
-    newCat.breed = await this.breedsService.getBreedById(createCatDto.breedId);
+    newCat.owner = await this.usersService.getUserByUsername(createCatDto.ownerUsername);
+    newCat.breeder = await this.usersService.getUserByUsername(createCatDto.breederUsername);
+    newCat.breed = await this.breedsService.getBreedByName(createCatDto.breedName);
     if (createCatDto.motherId) newCat.mother = await this.getCatById(createCatDto.motherId);
     if (createCatDto.fatherId) newCat.father = await this.getCatById(createCatDto.fatherId);
     await this.catsRepository.save(newCat);
@@ -123,10 +123,14 @@ export class CatsService {
   async updateCat(id: string, updateCatDto: UpdateCatDto) {
     await this.catsRepository.update(id, updateCatDto);
     const updatedCat = await this.catsRepository.findOne(id);
-    if (updatedCat) {
-      return updatedCat
+    if (!updatedCat) {
+      throw new HttpException('Cat not found', HttpStatus.NOT_FOUND);
     }
-    throw new HttpException('Cat not found', HttpStatus.NOT_FOUND);
+    if (updateCatDto.ownerUsername) updatedCat.owner = await this.usersService.getUserByUsername(updateCatDto.ownerUsername);
+    if (updateCatDto.breedName) updatedCat.breed = await this.breedsService.getBreedByName(updateCatDto.breedName);
+    if (updateCatDto.motherId) updatedCat.mother = await this.getCatById(updateCatDto.motherId);
+    if (updateCatDto.fatherId) updatedCat.father = await this.getCatById(updateCatDto.fatherId);
+    return updatedCat;
   }
 
   async deleteCat(id: string) {

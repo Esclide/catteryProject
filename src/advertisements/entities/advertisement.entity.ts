@@ -1,6 +1,6 @@
 import {
   Column,
-  Entity,
+  Entity, JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
@@ -29,6 +29,7 @@ export class Advertisement {
   description: string;
 
   @ManyToMany(() => Breed, (breed) => breed.advertisements)
+  @JoinTable()
   breeds: Breed[];
 
   @Column({})

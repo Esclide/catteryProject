@@ -29,7 +29,7 @@ export class Cat {
     @OneToMany(type => MaleCat, cat => cat.children, {nullable: true})
     father: Cat
 
-    @ManyToOne(type => Breed, breed => breed.cats)
+    @ManyToOne(type => Breed, breed => breed.cats, {eager: true})
     breed: Breed
 
     @Column({})

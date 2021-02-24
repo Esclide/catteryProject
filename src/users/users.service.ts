@@ -37,6 +37,14 @@ export class UsersService {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
+    async getUserByUsername(username: string) {
+        const user = await this.usersRepository.findOne({username});
+        if (user) {
+            return user;
+        }
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
     async getCatsByUserId(id: string) {
         const user = await this.usersRepository.findOne(id, {relations:['bredCats', 'ownedCats']});
         if (user) {
