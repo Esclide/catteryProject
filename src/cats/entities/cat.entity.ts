@@ -17,19 +17,25 @@ export class Cat {
     @Column({enum: ['male', 'female']})
     gender: string;
 
-    @ManyToOne(type => User, user => user.bredCats)
+    @ManyToOne(type => User, user => user.bredCats, {nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE'})
     breeder: User
 
-    @ManyToOne(type => User, user => user.ownedCats)
+    @ManyToOne(type => User, user => user.ownedCats, {nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE'})
     owner: User
 
-    @OneToMany(type => FemaleCat, cat => cat.children, {nullable: true})
+    @ManyToOne(type => Cat, cat => cat.motherChildren, {nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE'})
     mother: Cat
 
-    @OneToMany(type => MaleCat, cat => cat.children, {nullable: true})
+    @OneToMany(type => Cat, cat => cat.mother)
+    motherChildren: Cat[]
+
+    @ManyToOne(type => Cat, cat => cat.fatherChildren, {nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE'})
     father: Cat
 
-    @ManyToOne(type => Breed, breed => breed.cats, {eager: true})
+    @OneToMany(type => Cat, cat => cat.mother)
+    fatherChildren: Cat[]
+
+    @ManyToOne(type => Breed, breed => breed.cats, {eager: true, nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE'})
     breed: Breed
 
     @Column({})
@@ -53,22 +59,4 @@ export class Cat {
     @Column({ nullable: true })
     @Exclude()
     deletionDate: Date;
-}
-
-@Entity()
-export class FemaleCat extends Cat{
-    @Column({enum: ['male', 'female'], default: 'female'})
-    gender: string;
-
-    @ManyToOne(type => FemaleCat, cat => cat.mother)
-    children: Cat[]
-}
-
-@Entity()
-export class MaleCat extends Cat{
-    @Column({enum: ['male', 'female'], default: 'male'})
-    gender: string;
-
-    @ManyToOne(type => MaleCat, cat => cat.father)
-    children: Cat[]
 }

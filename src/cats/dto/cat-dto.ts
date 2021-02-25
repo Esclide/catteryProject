@@ -1,4 +1,13 @@
-import {IsBoolean, IsDateString, IsEnum, IsNotEmpty, IsNumberString, IsOptional, IsString} from "class-validator";
+import {
+    IsBoolean,
+    IsDateString,
+    IsEmpty,
+    IsEnum,
+    IsNotEmpty,
+    IsNumberString,
+    IsOptional,
+    IsString
+} from "class-validator";
 
 
 export class CreateCatDto {
@@ -15,21 +24,21 @@ export class CreateCatDto {
     gender: string;
 
     @IsString()
-    breederUsername: string
+    breederUsername: string;
 
     @IsString()
-    ownerUsername: string
+    ownerUsername: string;
 
     @IsNumberString()
     @IsOptional()
-    motherId?: string
+    motherId?: string;
 
     @IsNumberString()
     @IsOptional()
-    fatherId?: string
+    fatherId?: string;
 
     @IsString()
-    breedName: string
+    breedName: string;
 
     @IsString()
     color: string;
@@ -53,7 +62,7 @@ export class CreateCatDto {
 export class UpdateCatDto {
     @IsString()
     @IsOptional()
-    name: string;
+    name?: string;
 
     @IsString()
     @IsOptional()
@@ -62,35 +71,35 @@ export class UpdateCatDto {
     @IsString()
     @IsEnum(['male', 'female'])
     @IsOptional()
-    gender: string;
+    gender?: string;
 
     @IsString()
     @IsOptional()
-    ownerUsername: string
+    ownerUsername?: string;
 
     @IsNumberString()
     @IsOptional()
-    motherId?: string
+    motherId?: string;
 
     @IsNumberString()
     @IsOptional()
-    fatherId?: string
+    fatherId?: string;
 
     @IsString()
     @IsOptional()
-    breedName: string
+    breedName?: string;
 
     @IsString()
     @IsOptional()
-    color: string;
+    color?: string;
 
     @IsDateString()
     @IsOptional()
-    birthDate: Date;
+    birthDate?: Date;
 
     @IsBoolean()
     @IsOptional()
-    abilityToReproduce: Boolean;
+    abilityToReproduce?: Boolean;
 
     @IsString()
     @IsOptional()
@@ -98,5 +107,11 @@ export class UpdateCatDto {
 
     @IsBoolean()
     @IsOptional()
-    isAlive: Boolean;
+    isAlive?: Boolean;
+
+    @IsEmpty()
+    isDeleted?: boolean
+
+    @IsEmpty()
+    deletionDate?: string
 }

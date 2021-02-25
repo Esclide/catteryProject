@@ -60,9 +60,9 @@ export class BreedsService {
       }
       throw new HttpException('Something went wrong', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    const updatedCat = await this.getBreedById(id);
-    if (updatedCat) {
-      return updatedCat
+    const breed = await this.getBreedById(id);
+    if (breed) {
+      return breed
     }
     throw new HttpException('Breed not found', HttpStatus.NOT_FOUND);
   }
@@ -85,13 +85,16 @@ export class CatsService {
       private readonly breedsService: BreedsService
   ) {}
 
-  getAllCats() {
-    return this.catsRepository.find();
+  async getAllCats() {
+    const cats = await this.catsRepository.find()
+    return (cats.map((cat) => {
+      if (!cat.isDeleted) return cat
+    })).filter(function () { return true });;
   }
 
   async getCatById(id: string) {
     const cat = await this.catsRepository.findOne(id);
-    if (cat) {
+    if (cat && !cat.isDeleted) {
       return cat;
     }
     throw new HttpException('Cat not found', HttpStatus.NOT_FOUND);
@@ -103,7 +106,7 @@ export class CatsService {
 
   async getFullCatInfoById(id: string) {
     const cat = await this.catsRepository.findOne(id, {relations: ['breeder', 'owner',  'breed']});
-    if (cat) {
+    if (cat && !cat.isDeleted) {
       return cat;
     }
     throw new HttpException('Cat not found', HttpStatus.NOT_FOUND);
@@ -134,9 +137,6 @@ export class CatsService {
   }
 
   async deleteCat(id: string) {
-    const deleteResponse = await this.catsRepository.delete(id);
-    if (!deleteResponse.affected) {
-      throw new HttpException('Cat not found', HttpStatus.NOT_FOUND);
-    }
+    await this.updateCat(id, {isDeleted: true, deletionDate: new Date().toISOString()})
   }
 }

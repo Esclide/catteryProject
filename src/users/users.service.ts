@@ -16,9 +16,9 @@ export class UsersService {
 
     async getAllUsers() {
         const users = await this.usersRepository.find()
-        return users.map((user) => {
+        return (users.map((user) => {
             if (!user.isDeleted) return user
-        });
+        })).filter(function () { return true });;
     }
 
     async getUserById(id: string) {
