@@ -47,19 +47,21 @@ export class User {
   @Column({ default: `${mediaFolder}/default` })
   image: string;
 
-  @Column({default: false})
-  isDeleted: Boolean;
+  @Column({ default: false })
+  isDeleted: boolean;
 
   @Exclude()
   @Column({ nullable: true })
   deletionDate: Date;
 
-  @OneToMany(() => Cat, (cat) => cat.breeder, {nullable: true})
+  @OneToMany(() => Cat, (cat) => cat.breeder, { nullable: true })
   bredCats: Cat[];
 
-  @OneToMany(() => Cat, (cat) => cat.breeder, {nullable: true})
+  @OneToMany(() => Cat, (cat) => cat.breeder, { nullable: true })
   ownedCats: Cat[];
 
-  @OneToMany(() => Advertisement, (advertisement) => advertisement.creator, {nullable: true})
+  @OneToMany(() => Advertisement, (advertisement) => advertisement.creator, {
+    nullable: true,
+  })
   createdAdvertisements: Advertisement[];
 }
