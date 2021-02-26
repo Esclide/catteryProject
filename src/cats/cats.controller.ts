@@ -1,23 +1,33 @@
-import {Body, Controller, Delete, Get, HttpCode, Param, Post, Put, UseGuards} from '@nestjs/common';
-import {BreedsService, CatsService} from './cats.service';
-import {CreateCatDto, UpdateCatDto} from "./dto/cat-dto";
-import {Cat} from "./entities/cat.entity";
-import {Breed} from "./entities/breed.entity";
-import {CreateBreedDto, UpdateBreedDto} from "./dto/breed-dto";
-import {GetOneParam} from "../../utils/validators/get-one-param.validator";
-import {JwtAuthGuard} from "../auth/guards/jwt-auth.guard";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
+import { BreedsService, CatsService } from './cats.service';
+import { CreateCatDto, UpdateCatDto } from './dto/cat-dto';
+import { Cat } from './entities/cat.entity';
+import { Breed } from './entities/breed.entity';
+import { CreateBreedDto, UpdateBreedDto } from './dto/breed-dto';
+import { GetOneParam } from '../../utils/validators/get-one-param.validator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('cats')
 export class CatsController {
-  constructor(private catsService: CatsService) { }
+  constructor(private catsService: CatsService) {}
 
   @Get()
-  getAllCats(): Promise<Cat[]>  {
+  getAllCats(): Promise<Cat[]> {
     return this.catsService.getAllCats();
   }
 
   @Get(':id')
-  getCatById(@Param() {id}: GetOneParam): Promise<Cat> {
+  getCatById(@Param() { id }: GetOneParam): Promise<Cat> {
     return this.catsService.getCatById(id);
   }
 
@@ -30,7 +40,10 @@ export class CatsController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  updateCat(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto): Promise<Cat> {
+  updateCat(
+    @Param('id') id: string,
+    @Body() updateCatDto: UpdateCatDto,
+  ): Promise<Cat> {
     return this.catsService.updateCat(id, updateCatDto);
   }
 
@@ -43,15 +56,15 @@ export class CatsController {
 
 @Controller('breeds')
 export class BreedsController {
-  constructor(private breedsService: BreedsService) { }
+  constructor(private breedsService: BreedsService) {}
 
   @Get()
-  getAllBreeds(): Promise<Breed[]>  {
+  getAllBreeds(): Promise<Breed[]> {
     return this.breedsService.getAllBreeds();
   }
 
   @Get(':id')
-  getBreedById(@Param() {id}: GetOneParam): Promise<Breed> {
+  getBreedById(@Param() { id }: GetOneParam): Promise<Breed> {
     return this.breedsService.getBreedById(id);
   }
 
@@ -64,7 +77,10 @@ export class BreedsController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard)
-  updateBreed(@Param('id') id: string, @Body() updateBreedDto: UpdateBreedDto): Promise<Breed> {
+  updateBreed(
+    @Param('id') id: string,
+    @Body() updateBreedDto: UpdateBreedDto,
+  ): Promise<Breed> {
     return this.breedsService.updateBreed(id, updateBreedDto);
   }
 

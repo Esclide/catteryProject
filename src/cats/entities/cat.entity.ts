@@ -1,62 +1,94 @@
-import {Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
-import {User} from "../../users/entities/user.entity";
-import {Breed} from "./breed.entity";
-import {Exclude} from "class-transformer";
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { User } from '../../users/entities/user.entity';
+import { Breed } from './breed.entity';
+import { Exclude } from 'class-transformer';
+import { Advertisement } from '../../advertisements/entities/advertisement.entity';
 
 @Entity()
 export class Cat {
-    @PrimaryGeneratedColumn()
-    id: string;
+  @PrimaryGeneratedColumn()
+  id: string;
 
-    @Column({})
-    name: string;
+  @Column({})
+  name: string;
 
-    @Column({nullable: true})
-    title: string;
+  @Column({ nullable: true })
+  title: string;
 
-    @Column({enum: ['male', 'female']})
-    gender: string;
+  @Column({ enum: ['male', 'female'] })
+  gender: string;
 
-    @ManyToOne(type => User, user => user.bredCats, {nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE'})
-    breeder: User
+  @ManyToOne(() => User, (user) => user.bredCats, {
+    nullable: true,
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  breeder: User;
 
-    @ManyToOne(type => User, user => user.ownedCats, {nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE'})
-    owner: User
+  @ManyToOne(() => User, (user) => user.ownedCats, {
+    nullable: true,
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  owner: User;
 
-    @ManyToOne(type => Cat, cat => cat.motherChildren, {nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE'})
-    mother: Cat
+  @ManyToOne(() => Cat, (cat) => cat.motherChildren, {
+    nullable: true,
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  mother: Cat;
 
-    @OneToMany(type => Cat, cat => cat.mother)
-    motherChildren: Cat[]
+  @OneToMany(() => Cat, (cat) => cat.mother)
+  motherChildren: Cat[];
 
-    @ManyToOne(type => Cat, cat => cat.fatherChildren, {nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE'})
-    father: Cat
+  @ManyToOne(() => Cat, (cat) => cat.fatherChildren, {
+    nullable: true,
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  father: Cat;
 
-    @OneToMany(type => Cat, cat => cat.mother)
-    fatherChildren: Cat[]
+  @OneToMany(() => Cat, (cat) => cat.mother)
+  fatherChildren: Cat[];
 
-    @ManyToOne(type => Breed, breed => breed.cats, {eager: true, nullable: true, onDelete: 'SET NULL', onUpdate: 'CASCADE'})
-    breed: Breed
+  @ManyToOne(() => Breed, (breed) => breed.cats, {
+    eager: true,
+    nullable: true,
+    onDelete: 'SET NULL',
+    onUpdate: 'CASCADE',
+  })
+  breed: Breed;
 
-    @Column({})
-    color: string;
+  @Column({})
+  color: string;
 
-    @Column({})
-    birthDate: Date;
+  @Column({})
+  birthDate: Date;
 
-    @Column({default: true})
-    abilityToReproduce: Boolean;
+  @Column({ default: true })
+  abilityToReproduce: boolean;
 
-    @Column({nullable: true})
-    description: string;
+  @Column({ nullable: true })
+  description: string;
 
-    @Column({default: true})
-    isAlive: Boolean;
+  @Column({ default: true })
+  isAlive: boolean;
 
-    @Column({default: false})
-    isDeleted: Boolean;
+  @Column({ default: false })
+  isDeleted: boolean;
 
-    @Column({ nullable: true })
-    @Exclude()
-    deletionDate: Date;
+  @Column({ nullable: true })
+  @Exclude()
+  deletionDate: Date;
+
+  @ManyToMany(() => Advertisement, (advertisement) => advertisement.cats)
+  advertisements: Advertisement[];
 }

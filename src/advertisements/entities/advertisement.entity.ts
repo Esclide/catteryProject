@@ -1,12 +1,14 @@
 import {
   Column,
-  Entity, JoinTable,
+  Entity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Breed } from '../../cats/entities/breed.entity';
 import { User } from '../../users/entities/user.entity';
+import { Exclude } from 'class-transformer';
+import { Cat } from '../../cats/entities/cat.entity';
 
 const advertisementType = ['sale', 'knitting'];
 const advertisementLevels = ['general', 'cattery'];
@@ -28,14 +30,11 @@ export class Advertisement {
   @Column({})
   description: string;
 
-  @ManyToMany(() => Breed, (breed) => breed.advertisements)
+  @ManyToMany(() => Cat, (cat) => cat.advertisements, { eager: true })
   @JoinTable()
-  breeds: Breed[];
+  cats: Cat[];
 
-  @Column({})
-  color: string;
-
-  @ManyToOne(() => User, (user) => user.createdAdvertisements)
+  @ManyToOne(() => User, (user) => user.createdAdvertisements, { eager: true })
   creator: User;
 
   @Column({})
@@ -53,6 +52,7 @@ export class Advertisement {
   @Column({ default: false })
   isDeleted: boolean;
 
+  @Exclude()
   @Column({ nullable: true })
   deletionDate: Date;
 }
