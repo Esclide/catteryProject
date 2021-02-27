@@ -3,8 +3,6 @@ import { Cat } from '../../cats/entities/cat.entity';
 import { Advertisement } from '../../advertisements/entities/advertisement.entity';
 import { Exclude } from 'class-transformer';
 
-const mediaFolder = '../media';
-
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -44,7 +42,7 @@ export class User {
   @Column({ nullable: true })
   city: string;
 
-  @Column({ default: `${mediaFolder}/default` })
+  @Column({ default: 'default' })
   image: string;
 
   @Column({ default: false })

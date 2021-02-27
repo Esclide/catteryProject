@@ -1,12 +1,5 @@
-import {
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Cat } from './cat.entity';
-
-const mediaFolder = '../media';
 
 @Entity()
 export class Breed {
@@ -19,7 +12,7 @@ export class Breed {
   @Column({ nullable: true })
   description: string;
 
-  @Column({ default: `${mediaFolder}/default` })
+  @Column({ default: 'default' })
   image: string;
 
   @OneToMany(() => Cat, (cat) => cat.breed)

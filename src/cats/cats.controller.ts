@@ -52,6 +52,13 @@ export class CatsController {
   async deleteCat(@Param('id') id: string): Promise<void> {
     return this.catsService.deleteCat(id);
   }
+
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  addAttachment(@Body() createCatDto: CreateCatDto): Promise<Cat> {
+    return this.catsService.createCat(createCatDto);
+  }
 }
 
 @Controller('breeds')

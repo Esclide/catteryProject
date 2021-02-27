@@ -8,8 +8,7 @@ import { CreateBreedDto, UpdateBreedDto } from './dto/breed-dto';
 import { UsersService } from '../users/users.service';
 import { PostgresErrorCode } from '../database/postgres-error-codes.enum';
 import pick from 'lodash/pick';
-
-const mediaFolder = '../media/';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class BreedsService {
@@ -41,7 +40,7 @@ export class BreedsService {
   async createBreed(createBreedDto: CreateBreedDto) {
     try {
       if (createBreedDto.image)
-        createBreedDto.image = `${mediaFolder}${createBreedDto.image}`;
+        createBreedDto.image = await bcrypt.hash(createBreedDto.image, 10);
       const newBreed = await this.breedsRepository.create(createBreedDto);
       await this.breedsRepository.save(newBreed);
       return newBreed;
@@ -61,6 +60,8 @@ export class BreedsService {
 
   async updateBreed(id: string, updateBreedDto: UpdateBreedDto) {
     try {
+      if (updateBreedDto.image)
+        updateBreedDto.image = await bcrypt.hash(updateBreedDto.image, 10);
       await this.breedsRepository.update(id, updateBreedDto);
     } catch (error) {
       if (error?.code === PostgresErrorCode.UniqueViolation) {

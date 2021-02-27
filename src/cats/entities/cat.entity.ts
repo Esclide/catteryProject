@@ -10,6 +10,7 @@ import { User } from '../../users/entities/user.entity';
 import { Breed } from './breed.entity';
 import { Exclude } from 'class-transformer';
 import { Advertisement } from '../../advertisements/entities/advertisement.entity';
+import { CatAttachments } from './cat-attachments.entity';
 
 @Entity()
 export class Cat {
@@ -91,4 +92,7 @@ export class Cat {
 
   @ManyToMany(() => Advertisement, (advertisement) => advertisement.cats)
   advertisements: Advertisement[];
+
+  @OneToMany(() => CatAttachments, (catAttachment) => catAttachment.cat)
+  attachments: CatAttachments[];
 }

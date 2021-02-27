@@ -5,8 +5,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto, UpdateUserDto } from './dto/user-dto';
 import * as bcrypt from 'bcrypt';
 
-const mediaFolder = '../media/';
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -82,7 +80,7 @@ export class UsersService {
   async createUser(createUserDto: CreateUserDto) {
     await this.checkUniqueFieldsForCreate(createUserDto);
     if (createUserDto.image)
-      createUserDto.image = `${mediaFolder}${createUserDto.image}`;
+      createUserDto.image = await bcrypt.hash(createUserDto.image, 10);
     const newUser = await this.usersRepository.create(createUserDto);
     await this.usersRepository.save(newUser);
     return newUser;
@@ -90,9 +88,10 @@ export class UsersService {
 
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
     await this.checkUniqueFieldsForUpdate(updateUserDto);
+    if (updateUserDto.image)
+      updateUserDto.image = await bcrypt.hash(updateUserDto.image, 10);
     if (updateUserDto.password) {
-      const hashedPassword = await bcrypt.hash(updateUserDto.password, 10);
-      updateUserDto.password = hashedPassword;
+      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
     }
     await this.usersRepository.update(id, updateUserDto);
     const updatedUser = await this.usersRepository.findOne(id);
