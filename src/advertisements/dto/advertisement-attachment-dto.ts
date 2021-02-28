@@ -1,6 +1,6 @@
 import { IsBoolean, IsNumberString, IsString } from 'class-validator';
 
-export class CreateCatAttachmentDto {
+export class CreateAdvertisementAttachmentDto {
   @IsNumberString()
   catId: string;
 

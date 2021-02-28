@@ -9,6 +9,8 @@ import { UsersService } from '../users/users.service';
 import { PostgresErrorCode } from '../database/postgres-error-codes.enum';
 import pick from 'lodash/pick';
 import * as bcrypt from 'bcrypt';
+import {CreateCatAttachmentDto} from "./dto/cat-attachment-dto";
+import {CatAttachments} from "./entities/cat-attachments.entity";
 
 @Injectable()
 export class BreedsService {
@@ -95,6 +97,8 @@ export class CatsService {
   constructor(
     @InjectRepository(Cat)
     private readonly catsRepository: Repository<Cat>,
+    @InjectRepository(CatAttachments)
+    private readonly attachmentsRepository: Repository<CatAttachments>,
     private readonly usersService: UsersService,
     private readonly breedsService: BreedsService,
   ) {}
@@ -110,9 +114,9 @@ export class CatsService {
       });
   }
 
-  async getCatById(id: string) {
+  async getCatById(id: string): Promise<Cat> {
     const cat = await this.catsRepository.findOne(id, {
-      relations: ['breeder', 'owner'],
+      relations: ['breeder', 'owner', 'photos'],
     });
     if (cat && !cat.isDeleted) {
       return cat;
@@ -171,5 +175,65 @@ export class CatsService {
       isDeleted: true,
       deletionDate: new Date().toISOString(),
     });
+  }
+
+  async addAttachments(catId: string, createCatAttachmentDtoArray: CreateCatAttachmentDto[]) {
+    if (!(await this.catsRepository.findOne(catId))) {
+      throw new HttpException('Cat not found', HttpStatus.NOT_FOUND);
+    }
+    const attachmentsToReturn: CatAttachments[] = [];
+    for (const createCatAttachmentDto of createCatAttachmentDtoArray) {
+      const newAttachment = await this.attachmentsRepository.create(createCatAttachmentDto);
+      createCatAttachmentDto.path = await bcrypt.hash(createCatAttachmentDto.path, 10);
+      await this.attachmentsRepository.save(newAttachment);
+      attachmentsToReturn.push(newAttachment)
+    }
+    return attachmentsToReturn;
+  }
+
+  async getCatAttachments(catId: string): Promise<CatAttachments[]> {
+    const cat = await this.getCatById(catId);
+    return cat.attachments;
+  }
+
+  async getCatMainPhoto(catId: string): Promise<CatAttachments> {
+    const catAttachments = await this.getCatAttachments(catId);
+    for (const attachment of catAttachments) {
+      if (attachment.isMainPhoto) return attachment
+    }
+    return catAttachments[0]
+  }
+
+  async ifCatHasMainPhoto(catId: string): Promise<boolean> {
+    const mainPhoto = await this.getCatMainPhoto(catId)
+    return (mainPhoto.isMainPhoto)
+  }
+
+  async setMainPhoto(catId: string, attachmentId: string): Promise<CatAttachments> {
+    if (await this.ifCatHasMainPhoto(catId)) await this.attachmentsRepository.update(this.getCatMainPhoto(catId), {isMainPhoto: false});
+    try {
+      await this.attachmentsRepository.update(attachmentId, {isMainPhoto: true});
+    } catch (error) {
+      throw new HttpException(
+          'Attachment does not exists',
+          HttpStatus.NOT_FOUND_ERR,
+      );
+    }
+  }
+
+  async deleteAttachment(catId: string, attachmentId: string) {
+    const attachment: CatAttachments = await this.attachmentsRepository.findOne(attachmentId, {
+      relations: ['cat'],
+    })
+    if (!attachment) {
+      throw new HttpException('Attachment not found', HttpStatus.NOT_FOUND);
+    }
+    if (attachment.cat.id !== catId) {
+      throw new HttpException('Attachment not found', HttpStatus.NOT_FOUND);
+    }
+    const deleteResponse = await this.attachmentsRepository.delete(attachmentId);
+    if (!deleteResponse.affected) {
+      throw new HttpException('Attachment not found', HttpStatus.NOT_FOUND);
+    }
   }
 }

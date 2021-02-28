@@ -17,6 +17,8 @@ import {
   CreateAdvertisementDto,
   UpdateAdvertisementDto,
 } from './dto/advertisement-dto';
+import {CatAttachments} from "../cats/entities/cat-attachments.entity";
+import {CreateCatAttachmentDto} from "../cats/dto/cat-attachment-dto";
 
 @Controller('adverts')
 export class AdvertisementsController {
@@ -59,5 +61,38 @@ export class AdvertisementsController {
   @UseGuards(JwtAuthGuard)
   async deleteAdvertisement(@Param('id') id: string): Promise<void> {
     return this.advertisementsService.deleteAdvertisement(id);
+  }
+
+  @Get(':id/attach')
+  getAdvertisementAttachments(@Param() { id }: GetOneParam): Promise<CatAttachments[]> {
+    return this.advertisementsService.getAdvertisementAttachments(id);
+  }
+
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/attach')
+  addAttachments(@Param() { id }: GetOneParam, @Body() createAdvertisementAttachmentDtoArray: CreateAdvertisementAttachmentDto[]): Promise<CatAttachments[]> {
+    return this.advertisementsService.addAttachments(id, createAdvertisementAttachmentDtoArray);
+  }
+
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @Post(':catId/attach/:attachId')
+  deleteAttachment(@Param() { advertsId, attachId }: GetOneParam): Promise<void> {
+    return this.advertisementsService.deleteAttachment(advertsId, attachId);
+  }
+
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @Post(':advertsId/attach/:attachId/main')
+  setMainPhoto(@Param() { advertsId, attachId }: GetOneParam): Promise<CatAttachments> {
+    return this.advertisementsService.setMainPhoto(advertsId, attachId);
+  }
+
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @Post(':advertsId/attach/main')
+  getMainPhoto(@Param() { advertsId }: GetOneParam): Promise<CatAttachments> {
+    return this.advertisementsService.getCatMainPhoto(advertsId);
   }
 }

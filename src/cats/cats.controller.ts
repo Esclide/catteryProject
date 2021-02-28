@@ -16,6 +16,8 @@ import { Breed } from './entities/breed.entity';
 import { CreateBreedDto, UpdateBreedDto } from './dto/breed-dto';
 import { GetOneParam } from '../../utils/validators/get-one-param.validator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import {CreateCatAttachmentDto} from "./dto/cat-attachment-dto";
+import {CatAttachments} from "./entities/cat-attachments.entity";
 
 @Controller('cats')
 export class CatsController {
@@ -53,11 +55,37 @@ export class CatsController {
     return this.catsService.deleteCat(id);
   }
 
+  @Get(':id/attach')
+  getCatAttachments(@Param() { id }: GetOneParam): Promise<CatAttachments[]> {
+    return this.catsService.getCatAttachments(id);
+  }
+
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
-  @Post()
-  addAttachment(@Body() createCatDto: CreateCatDto): Promise<Cat> {
-    return this.catsService.createCat(createCatDto);
+  @Post(':id/attach')
+  addAttachments(@Param() { id }: GetOneParam, @Body() createCatAttachmentDtoArray: CreateCatAttachmentDto[]): Promise<CatAttachments[]> {
+    return this.catsService.addAttachments(id, createCatAttachmentDtoArray);
+  }
+
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @Post(':catId/attach/:attachId')
+  deleteAttachment(@Param() { catId, attachId }: GetOneParam): Promise<void> {
+    return this.catsService.deleteAttachment(catId, attachId);
+  }
+
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @Post(':catId/attach/:attachId/main')
+  setMainPhoto(@Param() { catId, attachId }: GetOneParam): Promise<CatAttachments> {
+    return this.catsService.setMainPhoto(catId, attachId);
+  }
+
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @Post(':catId/attach/main')
+  getMainPhoto(@Param() { catId }: GetOneParam): Promise<CatAttachments> {
+    return this.catsService.getCatMainPhoto(catId);
   }
 }
 

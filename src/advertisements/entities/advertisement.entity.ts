@@ -9,6 +9,7 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { Exclude } from 'class-transformer';
 import { Cat } from '../../cats/entities/cat.entity';
+import {AdvertisementAttachments} from "./advertisement-attachments.entity";
 
 const advertisementType = ['sale', 'knitting'];
 const advertisementLevels = ['general', 'cattery'];
@@ -55,4 +56,8 @@ export class Advertisement {
   @Exclude()
   @Column({ nullable: true })
   deletionDate: Date;
+
+  @ManyToMany(() => AdvertisementAttachments, (advertisementAttachment) => advertisementAttachment.advertisements, { eager: true })
+  @JoinTable()
+  attachments: AdvertisementAttachments[];
 }
