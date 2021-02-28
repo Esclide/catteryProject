@@ -11,10 +11,8 @@ import pick from 'lodash/pick';
 import { CatsService } from '../cats/cats.service';
 import { UsersService } from '../users/users.service';
 import { Cat } from '../cats/entities/cat.entity';
-import {CreateCatAttachmentDto} from "../cats/dto/cat-attachment-dto";
-import {CatAttachments} from "../cats/entities/cat-attachments.entity";
-import {CreateAdvertisementAttachmentDto} from "./dto/advertisement-attachment-dto";
-import {AdvertisementAttachments} from "./entities/advertisement-attachments.entity";
+import { CreateAdvertisementAttachmentDto } from './dto/advertisement-attachment-dto';
+import { AdvertisementAttachments } from './entities/advertisement-attachments.entity';
 
 @Injectable()
 export class AdvertisementsService {
@@ -103,61 +101,80 @@ export class AdvertisementsService {
     });
   }
 
-  async addAttachments(advertsId: string, createAdvertisementAttachmentDtoArray: CreateAdvertisementAttachmentDto[]) {
-    if (!(await this.advertisementsRepository.findOne(advertsId))) {
-      throw new HttpException('Advertisement not found', HttpStatus.NOT_FOUND);
-    }
-    const attachmentsToReturn: CatAttachments[] = [];
+  async addAttachments(
+    advertsId: string,
+    createAdvertisementAttachmentDtoArray: CreateAdvertisementAttachmentDto[],
+  ) {
+    const attachmentsToReturn: AdvertisementAttachments[] = [];
     for (const createAdvertisementAttachmentDto of createAdvertisementAttachmentDtoArray) {
-      const newAttachment = await this.attachmentsRepository.create(createAdvertisementAttachmentDto);
-      createAdvertisementAttachmentDto.path = await bcrypt.hash(createAdvertisementAttachmentDto.path, 10);
+      const newAttachment = await this.attachmentsRepository.create(
+        createAdvertisementAttachmentDto,
+      );
+      newAttachment.advertisement = await this.getAdvertisementById(advertsId);
       await this.attachmentsRepository.save(newAttachment);
-      attachmentsToReturn.push(newAttachment)
+      attachmentsToReturn.push(newAttachment);
     }
     return attachmentsToReturn;
   }
 
-  async getAdvertisementAttachments(advertsId: string): Promise<AdvertisementAttachments[]> {
+  async getAdvertisementAttachments(
+    advertsId: string,
+  ): Promise<AdvertisementAttachments[]> {
     const adverts = await this.getAdvertisementById(advertsId);
     return adverts.attachments;
   }
 
-  async getAdvertisementMainPhoto(advertsId: string): Promise<AdvertisementAttachments> {
-    const advertsAttachments = await this.getAdvertisementAttachments(advertsId);
+  async getAdvertisementMainPhoto(
+    advertsId: string,
+  ): Promise<AdvertisementAttachments> {
+    const advertsAttachments = await this.getAdvertisementAttachments(
+      advertsId,
+    );
     for (const attachment of advertsAttachments) {
-      if (attachment.isMainPhoto) return attachment
+      if (attachment.isMainPhoto) return attachment;
     }
-    return advertsAttachments[0]
+    return advertsAttachments[0];
   }
 
   async ifAdvertisementHasMainPhoto(advertsId: string): Promise<boolean> {
-    const mainPhoto = await this.getAdvertisementMainPhoto(advertsId)
-    return (mainPhoto.isMainPhoto)
+    const mainPhoto = await this.getAdvertisementMainPhoto(advertsId);
+    return mainPhoto.isMainPhoto;
   }
 
-  async setMainPhoto(advertsId: string, attachmentId: string): Promise<CatAttachments> {
-    if (await this.ifAdvertisementHasMainPhoto(advertsId)) await this.attachmentsRepository.update(this.getAdvertisementMainPhoto(advertsId), {isMainPhoto: false});
+  async setMainPhoto(advertsId: string, attachmentId: string): Promise<void> {
+    if (await this.ifAdvertisementHasMainPhoto(advertsId))
+      await this.attachmentsRepository.update(
+        await this.getAdvertisementMainPhoto(advertsId),
+        { isMainPhoto: false },
+      );
     try {
-      await this.attachmentsRepository.update(attachmentId, {isMainPhoto: true});
+      await this.attachmentsRepository.update(attachmentId, {
+        isMainPhoto: true,
+      });
     } catch (error) {
       throw new HttpException(
-          'Attachment does not exists',
-          HttpStatus.NOT_FOUND_ERR,
+        'Attachment does not exists',
+        HttpStatus.NOT_FOUND,
       );
     }
   }
 
   async deleteAttachment(advertsId: string, attachmentId: string) {
-    const attachment: AdvertisementAttachments = await this.attachmentsRepository.findOne(attachmentId, {
-      relations: ['advertisement'],
-    })
+    const attachment: AdvertisementAttachments = await this.attachmentsRepository.findOne(
+      attachmentId,
+      {
+        relations: ['advertisement'],
+      },
+    );
     if (!attachment) {
       throw new HttpException('Attachment not found', HttpStatus.NOT_FOUND);
     }
-    if (attachment.advertisement.id !== advertsId) {
+    if (attachment.advertisement.id.toString() !== advertsId) {
       throw new HttpException('Attachment not found', HttpStatus.NOT_FOUND);
     }
-    const deleteResponse = await this.attachmentsRepository.delete(attachmentId);
+    const deleteResponse = await this.attachmentsRepository.delete(
+      attachmentId,
+    );
     if (!deleteResponse.affected) {
       throw new HttpException('Attachment not found', HttpStatus.NOT_FOUND);
     }

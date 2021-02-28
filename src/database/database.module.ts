@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import {User} from "../users/entities/user.entity";
-import {Cat} from "../cats/entities/cat.entity";
-import {Breed} from "../cats/entities/breed.entity";
-import {Advertisement} from "../advertisements/entities/advertisement.entity";
+import { User } from '../users/entities/user.entity';
+import { Cat } from '../cats/entities/cat.entity';
+import { Breed } from '../cats/entities/breed.entity';
+import { Advertisement } from '../advertisements/entities/advertisement.entity';
+import { AdvertisementAttachments } from '../advertisements/entities/advertisement-attachments.entity';
+import { CatAttachments } from '../cats/entities/cat-attachments.entity';
 
 @Module({
   imports: [
@@ -18,9 +20,16 @@ import {Advertisement} from "../advertisements/entities/advertisement.entity";
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [User, Cat, Breed, Advertisement],
+        entities: [
+          User,
+          Cat,
+          Breed,
+          Advertisement,
+          AdvertisementAttachments,
+          CatAttachments,
+        ],
         synchronize: true,
-      })
+      }),
     }),
   ],
 })

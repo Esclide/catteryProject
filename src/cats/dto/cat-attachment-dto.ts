@@ -5,7 +5,7 @@ export class CreateCatAttachmentDto {
   catId: string;
 
   @IsString()
-  path: boolean;
+  path: string;
 
   @IsBoolean()
   isMainPhoto: boolean;

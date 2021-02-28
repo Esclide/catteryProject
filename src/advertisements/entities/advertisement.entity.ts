@@ -4,12 +4,13 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Exclude } from 'class-transformer';
 import { Cat } from '../../cats/entities/cat.entity';
-import {AdvertisementAttachments} from "./advertisement-attachments.entity";
+import { AdvertisementAttachments } from './advertisement-attachments.entity';
 
 const advertisementType = ['sale', 'knitting'];
 const advertisementLevels = ['general', 'cattery'];
@@ -57,7 +58,10 @@ export class Advertisement {
   @Column({ nullable: true })
   deletionDate: Date;
 
-  @ManyToMany(() => AdvertisementAttachments, (advertisementAttachment) => advertisementAttachment.advertisements, { eager: true })
-  @JoinTable()
+  @OneToMany(
+    () => AdvertisementAttachments,
+    (advertisementAttachment) => advertisementAttachment.advertisement,
+    { eager: true, nullable: true },
+  )
   attachments: AdvertisementAttachments[];
 }

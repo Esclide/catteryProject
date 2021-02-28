@@ -16,8 +16,8 @@ import { Breed } from './entities/breed.entity';
 import { CreateBreedDto, UpdateBreedDto } from './dto/breed-dto';
 import { GetOneParam } from '../../utils/validators/get-one-param.validator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import {CreateCatAttachmentDto} from "./dto/cat-attachment-dto";
-import {CatAttachments} from "./entities/cat-attachments.entity";
+import { CreateCatAttachmentDto } from './dto/cat-attachment-dto';
+import { CatAttachments } from './entities/cat-attachments.entity';
 
 @Controller('cats')
 export class CatsController {
@@ -63,28 +63,37 @@ export class CatsController {
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
   @Post(':id/attach')
-  addAttachments(@Param() { id }: GetOneParam, @Body() createCatAttachmentDtoArray: CreateCatAttachmentDto[]): Promise<CatAttachments[]> {
+  addAttachments(
+    @Param() { id }: GetOneParam,
+    @Body() createCatAttachmentDtoArray: CreateCatAttachmentDto[],
+  ): Promise<CatAttachments[]> {
     return this.catsService.addAttachments(id, createCatAttachmentDtoArray);
   }
 
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
-  @Post(':catId/attach/:attachId')
-  deleteAttachment(@Param() { catId, attachId }: GetOneParam): Promise<void> {
+  @Delete(':catId/attach/:attachId')
+  deleteAttachment(
+    @Param('catId') catId: string,
+    @Param('attachId') attachId: string,
+  ): Promise<void> {
     return this.catsService.deleteAttachment(catId, attachId);
   }
 
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
-  @Post(':catId/attach/:attachId/main')
-  setMainPhoto(@Param() { catId, attachId }: GetOneParam): Promise<CatAttachments> {
+  @Put(':catId/attach/:attachId/main')
+  setMainPhoto(
+    @Param('catId') catId: string,
+    @Param('attachId') attachId: string,
+  ): Promise<void> {
     return this.catsService.setMainPhoto(catId, attachId);
   }
 
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
-  @Post(':catId/attach/main')
-  getMainPhoto(@Param() { catId }: GetOneParam): Promise<CatAttachments> {
+  @Get(':catId/attach/main')
+  getMainPhoto(@Param('catId') catId: string): Promise<CatAttachments> {
     return this.catsService.getCatMainPhoto(catId);
   }
 }

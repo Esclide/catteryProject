@@ -63,7 +63,7 @@ export class Cat {
   @ManyToOne(() => Breed, (breed) => breed.cats, {
     eager: true,
     nullable: true,
-    onDelete: 'SET NULL',
+    onDelete: 'CASCADE',
     onUpdate: 'CASCADE',
   })
   breed: Breed;
@@ -93,6 +93,6 @@ export class Cat {
   @ManyToMany(() => Advertisement, (advertisement) => advertisement.cats)
   advertisements: Advertisement[];
 
-  @OneToMany(() => CatAttachments, (catAttachment) => catAttachment.cat)
+  @OneToMany(() => CatAttachments, (catAttachment) => catAttachment.cat, {eager: true})
   attachments: CatAttachments[];
 }

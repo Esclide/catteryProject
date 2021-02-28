@@ -6,7 +6,7 @@ export class CatAttachments {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @ManyToOne(() => Cat, (cat) => cat.attachments)
+  @ManyToOne(() => Cat, (cat) => cat.attachments, { onDelete: 'SET NULL', onUpdate: 'CASCADE'})
   cat: Cat;
 
   @Column()

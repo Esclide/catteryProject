@@ -2,10 +2,10 @@ import { IsBoolean, IsNumberString, IsString } from 'class-validator';
 
 export class CreateAdvertisementAttachmentDto {
   @IsNumberString()
-  catId: string;
+  advertisementId: string;
 
   @IsString()
-  path: boolean;
+  path: string;
 
   @IsBoolean()
   isMainPhoto: boolean;
