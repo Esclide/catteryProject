@@ -7,6 +7,7 @@ import { Breed } from '../cats/entities/breed.entity';
 import { Advertisement } from '../advertisements/entities/advertisement.entity';
 import { AdvertisementAttachments } from '../advertisements/entities/advertisement-attachments.entity';
 import { CatAttachments } from '../cats/entities/cat-attachments.entity';
+import { Cattery } from '../catteries/entities/cattery.entity';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CatAttachments } from '../cats/entities/cat-attachments.entity';
           Advertisement,
           AdvertisementAttachments,
           CatAttachments,
+          Cattery,
         ],
         synchronize: true,
       }),

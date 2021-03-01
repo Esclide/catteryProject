@@ -7,6 +7,8 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
+  private notFoundError = 'User not found';
+
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
@@ -28,7 +30,7 @@ export class UsersService {
     if (user && !user.isDeleted) {
       return user;
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
 
   async getUserByEmail(email: string) {
@@ -36,7 +38,7 @@ export class UsersService {
     if (user && !user.isDeleted) {
       return user;
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
 
   async getUserByUsername(username: string) {
@@ -44,7 +46,7 @@ export class UsersService {
     if (user && !user.isDeleted) {
       return user;
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
 
   async getOwnedCatsByUserId(id: string) {
@@ -54,7 +56,7 @@ export class UsersService {
     if (user && !user.isDeleted) {
       return user.ownedCats;
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
 
   async getBredCatsByUserId(id: string) {
@@ -64,7 +66,7 @@ export class UsersService {
     if (user && !user.isDeleted) {
       return user.bredCats;
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
 
   async getFullUserInfo(id: string) {
@@ -74,7 +76,7 @@ export class UsersService {
     if (user && !user.isDeleted) {
       return user;
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
 
   async createUser(createUserDto: CreateUserDto) {
@@ -94,10 +96,19 @@ export class UsersService {
     if (updatedUser) {
       return updatedUser;
     }
-    throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
 
   async deleteUser(id: string) {
+    const user = await this.usersRepository.findOne(id, {
+      relations: ['leadCatteries'],
+    });
+    if (user.leadCatteries.length > 0) {
+      throw new HttpException(
+        'Unable to remove leader of cattery',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
     await this.updateUser(id, {
       isDeleted: true,
       deletionDate: new Date().toISOString(),

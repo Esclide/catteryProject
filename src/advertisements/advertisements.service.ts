@@ -16,6 +16,7 @@ import { AdvertisementAttachments } from './entities/advertisement-attachments.e
 
 @Injectable()
 export class AdvertisementsService {
+  private notFoundError = 'Advertisements not found';
   constructor(
     @InjectRepository(Advertisement)
     private advertisementsRepository: Repository<Advertisement>,
@@ -42,7 +43,7 @@ export class AdvertisementsService {
     if (advertisements && !advertisements.isDeleted) {
       return advertisements;
     }
-    throw new HttpException('Advertisements not found', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
 
   async createAdvertisement(createAdvertisementDto: CreateAdvertisementDto) {
@@ -72,7 +73,7 @@ export class AdvertisementsService {
       id,
     );
     if (!updatedAdvertisement) {
-      throw new HttpException('Advertisement not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
     }
 
     const updatedFields = Object.keys(

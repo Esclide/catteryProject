@@ -13,6 +13,8 @@ import { CatAttachments } from './entities/cat-attachments.entity';
 
 @Injectable()
 export class BreedsService {
+  private notFoundError = 'Breed not found';
+
   constructor(
     @InjectRepository(Breed)
     private breedsRepository: Repository<Breed>,
@@ -27,7 +29,7 @@ export class BreedsService {
     if (breed) {
       return breed;
     }
-    throw new HttpException('Breed not found', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
 
   async getBreedByName(name: string) {
@@ -35,7 +37,7 @@ export class BreedsService {
     if (breed) {
       return breed;
     }
-    throw new HttpException('Breed not found', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
 
   async createBreed(createBreedDto: CreateBreedDto) {
@@ -76,19 +78,21 @@ export class BreedsService {
     if (breed) {
       return breed;
     }
-    throw new HttpException('Breed not found', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
 
   async deleteBreed(id: string) {
     const deleteResponse = await this.breedsRepository.delete(id);
     if (!deleteResponse.affected) {
-      throw new HttpException('Breed not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
     }
   }
 }
 
 @Injectable()
 export class CatsService {
+  private notFoundError = 'Cat not found';
+
   constructor(
     @InjectRepository(Cat)
     private readonly catsRepository: Repository<Cat>,
@@ -116,7 +120,7 @@ export class CatsService {
     if (cat && !cat.isDeleted) {
       return cat;
     }
-    throw new HttpException('Cat not found', HttpStatus.NOT_FOUND);
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
 
   async createCat(createCatDto: CreateCatDto) {
@@ -141,7 +145,7 @@ export class CatsService {
   async updateCat(id: string, updateCatDto: UpdateCatDto) {
     const updatedCat = await this.catsRepository.findOne(id);
     if (!updatedCat) {
-      throw new HttpException('Cat not found', HttpStatus.NOT_FOUND);
+      throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
     }
 
     const updatedFields = Object.keys(pick(updateCatDto, catFieldsForUpdate));

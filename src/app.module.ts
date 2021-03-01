@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import {UsersModule} from "./users/users.module";
-import {CatsModule} from "./cats/cats.module";
-import {AdvertisementsModule} from "./advertisements/advertisements.module";
+import { UsersModule } from './users/users.module';
+import { CatsModule } from './cats/cats.module';
+import { AdvertisementsModule } from './advertisements/advertisements.module';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
-import {DatabaseModule} from "./database/database.module";
-import {AuthModule} from "./auth/auth.module";
-import {APP_FILTER} from "@nestjs/core";
-import {ExceptionsLoggerFilter} from "../utils/filters/exceptions-logger.filter";
+import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './auth/auth.module';
+import { APP_FILTER } from '@nestjs/core';
+import { ExceptionsLoggerFilter } from '../utils/filters/exceptions-logger.filter';
+import { CatteriesModule } from './catteries/catteries.module';
 
 @Module({
   imports: [
@@ -21,18 +22,22 @@ import {ExceptionsLoggerFilter} from "../utils/filters/exceptions-logger.filter"
         POSTGRES_PASSWORD: Joi.string().required(),
         POSTGRES_DB: Joi.string().required(),
         PORT: Joi.number(),
-      })
+      }),
     }),
     UsersModule,
     CatsModule,
     AdvertisementsModule,
     DatabaseModule,
     AuthModule,
+    CatteriesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, {
-    provide: APP_FILTER,
-    useClass: ExceptionsLoggerFilter,
-  },],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: ExceptionsLoggerFilter,
+    },
+  ],
 })
 export class AppModule {}

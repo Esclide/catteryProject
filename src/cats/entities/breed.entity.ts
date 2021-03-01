@@ -1,5 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Cat } from './cat.entity';
+import { Cattery } from '../../catteries/entities/cattery.entity';
 
 @Entity()
 export class Breed {
@@ -17,4 +24,7 @@ export class Breed {
 
   @OneToMany(() => Cat, (cat) => cat.breed)
   cats: Cat[];
+
+  @ManyToMany(() => Cattery, (cattery) => cattery.breeds)
+  catteries: Cattery[];
 }

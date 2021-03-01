@@ -2,6 +2,7 @@ import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Cat } from '../../cats/entities/cat.entity';
 import { Advertisement } from '../../advertisements/entities/advertisement.entity';
 import { Exclude } from 'class-transformer';
+import { Cattery } from '../../catteries/entities/cattery.entity';
 
 @Entity()
 export class User {
@@ -62,4 +63,9 @@ export class User {
     nullable: true,
   })
   createdAdvertisements: Advertisement[];
+
+  @OneToMany(() => Cattery, (cattery) => cattery.leader, {
+    nullable: true,
+  })
+  leadCatteries: Cattery[];
 }
