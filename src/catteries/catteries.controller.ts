@@ -47,7 +47,8 @@ export class CatteriesController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async deleteCattery(@Param('id') id: string): Promise<void> {
+  async deleteCattery(@Param() { id }: GetOneParam): Promise<void> {
     return this.catteriesService.deleteCattery(id);
   }
 }
+

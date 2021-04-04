@@ -3,6 +3,8 @@ import { Cat } from '../../cats/entities/cat.entity';
 import { Advertisement } from '../../advertisements/entities/advertisement.entity';
 import { Exclude } from 'class-transformer';
 import { Cattery } from '../../catteries/entities/cattery.entity';
+import { UserInCattery } from '../../catteries/entities/user-in-cattery.entity';
+import { ApplicationToCattery } from '../../catteries/entities/application-to-cattery.entity';
 
 @Entity()
 export class User {
@@ -68,4 +70,18 @@ export class User {
     nullable: true,
   })
   leadCatteries: Cattery[];
+
+  @OneToMany(() => UserInCattery, (userInCattery) => userInCattery.user, {
+    nullable: true,
+  })
+  catteries: UserInCattery[];
+
+  @OneToMany(
+    () => ApplicationToCattery,
+    (applicationToCattery) => applicationToCattery.user,
+    {
+      nullable: true,
+    },
+  )
+  applications: ApplicationToCattery[];
 }

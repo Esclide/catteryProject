@@ -3,12 +3,14 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  ManyToOne,
+  ManyToOne, OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Breed } from '../../cats/entities/breed.entity';
 import { User } from '../../users/entities/user.entity';
 import { Exclude } from 'class-transformer';
+import { UserInCattery } from './user-in-cattery.entity';
+import { ApplicationToCattery } from './application-to-cattery.entity';
 
 @Entity()
 export class Cattery {
@@ -51,4 +53,10 @@ export class Cattery {
   @Exclude()
   @Column({ nullable: true })
   deletionDate: Date;
+
+  @OneToMany(() => UserInCattery, (userInCattery) => userInCattery.cattery)
+  users: UserInCattery[];
+
+  @OneToMany(() => ApplicationToCattery, (applicationToCattery) => applicationToCattery.cattery)
+  applications: UserInCattery[];
 }

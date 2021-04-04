@@ -45,7 +45,7 @@ export class CatteriesService {
   }
 
   async createCattery(createCatteryDto: CreateCatteryDto) {
-    const newCattery = await this.catteriesRepository.create(createCatteryDto);
+    const newCattery = this.catteriesRepository.create(createCatteryDto);
     newCattery.leader = await this.usersService.getUserByUsername(
       createCatteryDto.leaderUsername,
     );

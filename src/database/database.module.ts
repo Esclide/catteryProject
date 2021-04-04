@@ -8,6 +8,8 @@ import { Advertisement } from '../advertisements/entities/advertisement.entity';
 import { AdvertisementAttachments } from '../advertisements/entities/advertisement-attachments.entity';
 import { CatAttachments } from '../cats/entities/cat-attachments.entity';
 import { Cattery } from '../catteries/entities/cattery.entity';
+import { UserInCattery } from '../catteries/entities/user-in-cattery.entity';
+import { ApplicationToCattery } from '../catteries/entities/application-to-cattery.entity';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { Cattery } from '../catteries/entities/cattery.entity';
           AdvertisementAttachments,
           CatAttachments,
           Cattery,
+          UserInCattery,
+          ApplicationToCattery,
         ],
         synchronize: true,
       }),
