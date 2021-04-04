@@ -2,8 +2,10 @@ import {
   Body,
   Controller,
   Delete,
+  forwardRef,
   Get,
   HttpCode,
+  Inject,
   Param,
   Post,
   Put,
@@ -17,10 +19,17 @@ import { CatteriesService } from './catteries.service';
 import { CreateCatteryDto, UpdateCatteryDto } from './dto/cattery-dto';
 import { UserInCattery } from './entities/user-in-cattery.entity';
 import { Cat } from '../cats/entities/cat.entity';
+import { CreateAdvertisementDto } from '../advertisements/dto/advertisement-dto';
+import { Advertisement } from '../advertisements/entities/advertisement.entity';
+import { AdvertisementsService } from '../advertisements/advertisements.service';
 
 @Controller('catteries')
 export class CatteriesController {
-  constructor(private catteriesService: CatteriesService) {}
+  constructor(
+    private catteriesService: CatteriesService,
+    @Inject(forwardRef(() => AdvertisementsService))
+    private advertisementsService: AdvertisementsService,
+  ) {}
 
   @Get()
   getAllCatteries(): Promise<Cattery[]> {
@@ -122,5 +131,19 @@ export class CatteriesController {
   @UseGuards(JwtAuthGuard)
   getAllCatteryCats(@Param() { id }: GetOneParam): Promise<Cat[]> {
     return this.catteriesService.getAllCatteryCats(id);
+  }
+
+  @HttpCode(200)
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/advertisement')
+  createAdvertisement(
+    @Body() createAdvertisementDto: CreateAdvertisementDto,
+    @Param() { id }: GetOneParam,
+  ): Promise<Advertisement> {
+    createAdvertisementDto.level = 'general';
+    createAdvertisementDto.catteryId = id;
+    return this.advertisementsService.createAdvertisement(
+      createAdvertisementDto,
+    );
   }
 }

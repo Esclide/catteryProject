@@ -11,6 +11,7 @@ import { User } from '../../users/entities/user.entity';
 import { Exclude } from 'class-transformer';
 import { UserInCattery } from './user-in-cattery.entity';
 import { ApplicationToCattery } from './application-to-cattery.entity';
+import { Advertisement } from '../../advertisements/entities/advertisement.entity';
 
 @Entity()
 export class Cattery {
@@ -59,4 +60,9 @@ export class Cattery {
 
   @OneToMany(() => ApplicationToCattery, (applicationToCattery) => applicationToCattery.cattery)
   applications: UserInCattery[];
+
+  @OneToMany(() => Advertisement, (advertisement) => advertisement.cattery, {
+    nullable: true,
+  })
+  advertisements: Advertisement[];
 }

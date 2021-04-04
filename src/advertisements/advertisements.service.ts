@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Advertisement } from './entities/advertisement.entity';
@@ -13,6 +19,7 @@ import { UsersService } from '../users/users.service';
 import { Cat } from '../cats/entities/cat.entity';
 import { CreateAdvertisementAttachmentDto } from './dto/advertisement-attachment-dto';
 import { AdvertisementAttachments } from './entities/advertisement-attachments.entity';
+import { CatteriesService } from '../catteries/catteries.service';
 
 @Injectable()
 export class AdvertisementsService {
@@ -24,6 +31,8 @@ export class AdvertisementsService {
     private attachmentsRepository: Repository<AdvertisementAttachments>,
     private readonly usersService: UsersService,
     private readonly catsService: CatsService,
+    @Inject(forwardRef(() => CatteriesService))
+    private readonly catteriesService: CatteriesService,
   ) {}
 
   async getAllAdvertisements() {
@@ -59,6 +68,16 @@ export class AdvertisementsService {
         cats.push(await this.catsService.getCatById(catId));
       }
       newAdvertisement.cats = cats;
+    }
+
+    if (
+      createAdvertisementDto.level === 'cattery' &&
+      createAdvertisementDto.catteryId
+    ) {
+      const cattery = await this.catteriesService.getCatteryById(
+        createAdvertisementDto.catteryId,
+      );
+      newAdvertisement.cattery = cattery;
     }
 
     await this.advertisementsRepository.save(newAdvertisement);

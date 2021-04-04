@@ -40,6 +40,7 @@ export class AdvertisementsController {
   createAdvertisement(
     @Body() createAdvertisementDto: CreateAdvertisementDto,
   ): Promise<Advertisement> {
+    createAdvertisementDto.level = 'general';
     return this.advertisementsService.createAdvertisement(
       createAdvertisementDto,
     );

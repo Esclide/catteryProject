@@ -12,7 +12,8 @@ export class CreateAdvertisementDto {
   @IsEnum(['sale', 'knitting'])
   type: string;
 
-  @IsEnum(['general', 'cattery'])
+  // @IsEnum(['general', 'cattery'])
+  @IsEmpty()
   level: string;
 
   @IsString()
@@ -37,16 +38,15 @@ export class CreateAdvertisementDto {
 
   @IsArray()
   catIDs: string[];
+
+  @IsEmpty()
+  catteryId: string;
 }
 
 export class UpdateAdvertisementDto {
   @IsEnum(['sale', 'knitting'])
   @IsOptional()
   type?: string;
-
-  @IsEnum(['general', 'cattery'])
-  @IsOptional()
-  level?: string;
 
   @IsString()
   @IsOptional()

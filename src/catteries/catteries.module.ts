@@ -9,12 +9,14 @@ import { ApplicationToCattery } from './entities/application-to-cattery.entity';
 import { UserInCattery } from './entities/user-in-cattery.entity';
 import { ApplicationsService } from './applications.service';
 import { ApplicationsController } from './applications.controller';
+import { AdvertisementsModule } from '../advertisements/advertisements.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Cattery, UserInCattery, ApplicationToCattery]),
     CatsModule,
     forwardRef(() => UsersModule),
+    forwardRef(() => AdvertisementsModule),
   ],
   controllers: [CatteriesController, ApplicationsController],
   providers: [CatteriesService, ApplicationsService],
