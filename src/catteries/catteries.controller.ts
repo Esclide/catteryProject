@@ -16,6 +16,7 @@ import { Cattery } from './entities/cattery.entity';
 import { CatteriesService } from './catteries.service';
 import { CreateCatteryDto, UpdateCatteryDto } from './dto/cattery-dto';
 import { UserInCattery } from './entities/user-in-cattery.entity';
+import { Cat } from '../cats/entities/cat.entity';
 
 @Controller('catteries')
 export class CatteriesController {
@@ -115,5 +116,11 @@ export class CatteriesController {
     @Param('userId') userId: string,
   ): Promise<void> {
     return this.catteriesService.unsetUserAdmin(catteryId, userId);
+  }
+
+  @Get(':id/cats')
+  @UseGuards(JwtAuthGuard)
+  getAllCatteryCats(@Param() { id }: GetOneParam): Promise<Cat[]> {
+    return this.catteriesService.getAllCatteryCats(id);
   }
 }

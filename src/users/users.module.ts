@@ -5,11 +5,13 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { CatteriesModule } from '../catteries/catteries.module';
 import { ProfileController } from './profile.controller';
+import { CatsModule } from '../cats/cats.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
     forwardRef(() => CatteriesModule),
+    forwardRef(() => CatsModule),
   ],
   controllers: [UsersController, ProfileController],
   providers: [UsersService],

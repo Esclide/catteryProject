@@ -58,7 +58,7 @@ export class User {
   @OneToMany(() => Cat, (cat) => cat.breeder, { nullable: true })
   bredCats: Cat[];
 
-  @OneToMany(() => Cat, (cat) => cat.breeder, { nullable: true })
+  @OneToMany(() => Cat, (cat) => cat.owner, { nullable: true })
   ownedCats: Cat[];
 
   @OneToMany(() => Advertisement, (advertisement) => advertisement.creator, {

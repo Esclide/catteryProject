@@ -51,6 +51,7 @@
     "typeorm": "^0.2.31"
   },
   "devDependencies": {
+    "@types/chai": "4.2.3",
     "@hapi/joi": "^17.1.1",
     "@nestjs/cli": "^7.5.1",
     "@nestjs/config": "^0.6.3",

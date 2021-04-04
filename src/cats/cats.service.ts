@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cat } from './entities/cat.entity';
@@ -98,6 +98,7 @@ export class CatsService {
     private readonly catsRepository: Repository<Cat>,
     @InjectRepository(CatAttachments)
     private readonly attachmentsRepository: Repository<CatAttachments>,
+    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly breedsService: BreedsService,
   ) {}

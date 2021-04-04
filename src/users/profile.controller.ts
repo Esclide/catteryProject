@@ -13,6 +13,7 @@ import { ApplicationsService } from '../catteries/applications.service';
 import { ApplicationToCattery } from '../catteries/entities/application-to-cattery.entity';
 import { User } from './entities/user.entity';
 import { Cattery } from '../catteries/entities/cattery.entity';
+import { CatsService } from '../cats/cats.service';
 
 @Controller('profile')
 export class ProfileController {
@@ -20,6 +21,8 @@ export class ProfileController {
     private usersService: UsersService,
     @Inject(forwardRef(() => CatteriesService))
     private readonly catteriesService: CatteriesService,
+    @Inject(forwardRef(() => CatsService))
+    private readonly catsService: CatsService,
     @Inject(forwardRef(() => ApplicationsService))
     private readonly applicationsService: ApplicationsService,
   ) {}
@@ -40,5 +43,11 @@ export class ProfileController {
   @Get('catteries/applications')
   getAllApplicationsToCatteries(@Req() request): Promise<ApplicationToCattery[]> {
     return this.applicationsService.getAllUserApplications(request.user.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('cats')
+  getAllCats(@Req() request): Promise<Cattery[]> {
+    return this.catteriesService.getAllUserCatteries(request.user.userId);
   }
 }

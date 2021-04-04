@@ -18,12 +18,13 @@ import { UsersService } from '../users/users.service';
 import { Breed } from '../cats/entities/breed.entity';
 import pick from 'lodash/pick';
 import { UserInCattery } from './entities/user-in-cattery.entity';
-import { applicationStatus } from './lib/applicationStatus.enum';
+import { Cat } from '../cats/entities/cat.entity';
 
 @Injectable()
 export class CatteriesService {
   private notFoundCatteryError = 'Cattery not found';
   private notFoundUserInCatteryError = 'User in cattery not found';
+  private leaderDeletionError = 'Cannot delete leader of cattery';
 
   constructor(
     @InjectRepository(Cattery)
@@ -83,6 +84,8 @@ export class CatteriesService {
     }
     newCattery.breeds = breeds;
     await this.catteriesRepository.save(newCattery);
+    await this.addUserToCattery(newCattery.id, newCattery.leader.id);
+    await this.setUserAdmin(newCattery.id, newCattery.leader.id);
     return newCattery;
   }
 
@@ -176,6 +179,13 @@ export class CatteriesService {
     userId: string,
   ): Promise<void> {
     const userInCattery = await this.getCatteryUserById(catteryId, userId);
+    const catteryLeader = (await this.getCatteryById(catteryId)).leader;
+    if (userInCattery.user == catteryLeader) {
+      throw new HttpException(
+        this.leaderDeletionError,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
 
     const deleteResponse = await this.usersInCatteriesRepository.delete(
       userInCattery.id,
@@ -210,5 +220,21 @@ export class CatteriesService {
     const userInCattery = await this.getCatteryUserById(catteryId, userId);
     userInCattery.isAdmin = false;
     await this.usersInCatteriesRepository.save(userInCattery);
+  }
+
+  async getAllCatteryCats(catteryId: string): Promise<Cat[]> {
+    const cats: Cat[] = [];
+    const usersInCattery = await this.getCatteryUsers(catteryId);
+    if (usersInCattery) {
+      for (const userInCattery of usersInCattery) {
+        const ownedCats = await this.usersService.getOwnedCatsByUserId(
+          userInCattery.user.id,
+        );
+        if (ownedCats) {
+          cats.push(...ownedCats);
+        }
+      }
+    }
+    return cats;
   }
 }
