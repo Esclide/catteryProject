@@ -30,13 +30,6 @@ export class ApplicationsController {
 
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
-  @Get('/applications')
-  getAllUserApplications(@Req() request): Promise<ApplicationToCattery[]> {
-    return this.applicationsService.getAllUserApplications(request.user.userId);
-  }
-
-  @HttpCode(200)
-  @UseGuards(JwtAuthGuard)
   @Post('catteries/:id/request')
   sendApplicationToCattery(
     @Req() request,

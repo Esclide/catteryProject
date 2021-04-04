@@ -1,4 +1,10 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cattery } from './entities/cattery.entity';
@@ -12,6 +18,7 @@ import { UsersService } from '../users/users.service';
 import { Breed } from '../cats/entities/breed.entity';
 import pick from 'lodash/pick';
 import { UserInCattery } from './entities/user-in-cattery.entity';
+import { applicationStatus } from './lib/applicationStatus.enum';
 
 @Injectable()
 export class CatteriesService {
@@ -128,11 +135,25 @@ export class CatteriesService {
   ): Promise<UserInCattery> {
     const cattery = await this.getCatteryById(catteryId);
     const user = await this.usersService.getUserById(userId);
-
-    return await this.usersInCatteriesRepository.findOne({
+    const member = await this.usersInCatteriesRepository.findOne({
       where: { cattery: cattery, user: user },
       relations: ['user'],
     });
+    if (member) return member;
+    throw new HttpException(
+      this.notFoundUserInCatteryError,
+      HttpStatus.NOT_FOUND,
+    );
+  }
+
+  async ifUserInCattery(catteryId: string, userId: string): Promise<boolean> {
+    const cattery = await this.getCatteryById(catteryId);
+    const user = await this.usersService.getUserById(userId);
+    const member = await this.usersInCatteriesRepository.findOne({
+      where: { cattery: cattery, user: user },
+      relations: ['user'],
+    });
+    return !!member;
   }
 
   async addUserToCattery(
@@ -165,5 +186,29 @@ export class CatteriesService {
         HttpStatus.NOT_FOUND,
       );
     }
+  }
+
+  async setFeePaid(catteryId: string, userId: string): Promise<void> {
+    const userInCattery = await this.getCatteryUserById(catteryId, userId);
+    userInCattery.isFeePaid = true;
+    await this.usersInCatteriesRepository.save(userInCattery);
+  }
+
+  async setFeeUnpaid(catteryId: string, userId: string): Promise<void> {
+    const userInCattery = await this.getCatteryUserById(catteryId, userId);
+    userInCattery.isFeePaid = false;
+    await this.usersInCatteriesRepository.save(userInCattery);
+  }
+
+  async setUserAdmin(catteryId: string, userId: string): Promise<void> {
+    const userInCattery = await this.getCatteryUserById(catteryId, userId);
+    userInCattery.isAdmin = true;
+    await this.usersInCatteriesRepository.save(userInCattery);
+  }
+
+  async unsetUserAdmin(catteryId: string, userId: string): Promise<void> {
+    const userInCattery = await this.getCatteryUserById(catteryId, userId);
+    userInCattery.isAdmin = false;
+    await this.usersInCatteriesRepository.save(userInCattery);
   }
 }

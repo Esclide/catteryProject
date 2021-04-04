@@ -27,7 +27,7 @@ export class ProfileController {
   @UseGuards(JwtAuthGuard)
   @Get('')
   getProfile(@Req() request): Promise<User> {
-    return this.usersService.getUserById(request.userId);
+    return this.usersService.getUserById(request.user.userId);
   }
 
   @UseGuards(JwtAuthGuard)

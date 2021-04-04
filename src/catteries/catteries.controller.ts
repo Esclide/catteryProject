@@ -80,4 +80,40 @@ export class CatteriesController {
   leaveCattery(@Req() request, @Param() { id }: GetOneParam): Promise<void> {
     return this.catteriesService.deleteUserFromCattery(id, request.user.userId);
   }
+
+  @Put(':catteryId/members/:userId/feePaid')
+  @UseGuards(JwtAuthGuard)
+  setFeePaid(
+    @Param('catteryId') catteryId: string,
+    @Param('userId') userId: string,
+  ): Promise<void> {
+    return this.catteriesService.setFeePaid(catteryId, userId);
+  }
+
+  @Put(':catteryId/members/:userId/feeUnpaid')
+  @UseGuards(JwtAuthGuard)
+  setFeeUnpaid(
+    @Param('catteryId') catteryId: string,
+    @Param('userId') userId: string,
+  ): Promise<void> {
+    return this.catteriesService.setFeeUnpaid(catteryId, userId);
+  }
+
+  @Put(':catteryId/members/:userId/setAdmin')
+  @UseGuards(JwtAuthGuard)
+  setUserAdmin(
+    @Param('catteryId') catteryId: string,
+    @Param('userId') userId: string,
+  ): Promise<void> {
+    return this.catteriesService.setUserAdmin(catteryId, userId);
+  }
+
+  @Put(':catteryId/members/:userId/unsetAdmin')
+  @UseGuards(JwtAuthGuard)
+  unsetUserAdmin(
+    @Param('catteryId') catteryId: string,
+    @Param('userId') userId: string,
+  ): Promise<void> {
+    return this.catteriesService.unsetUserAdmin(catteryId, userId);
+  }
 }

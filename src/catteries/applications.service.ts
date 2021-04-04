@@ -77,7 +77,7 @@ export class ApplicationsService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    if (await this.catteriesService.getCatteryUserById(catteryId, userId)) {
+    if (await this.catteriesService.ifUserInCattery(catteryId, userId)) {
       throw new HttpException(
         this.alreadyInCatteryError,
         HttpStatus.BAD_REQUEST,
