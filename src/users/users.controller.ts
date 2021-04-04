@@ -1,8 +1,8 @@
 import {
   Body,
   Controller,
-  Delete,
-  Get,
+  Delete, forwardRef,
+  Get, Inject,
   Param,
   Put,
   UseGuards,
@@ -13,14 +13,25 @@ import { CreateUserDto, UpdateUserDto } from './dto/user-dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { GetOneParam } from '../../utils/validators/get-one-param.validator';
 import { Cat } from '../cats/entities/cat.entity';
+import { Cattery } from '../catteries/entities/cattery.entity';
+import { CatteriesService } from '../catteries/catteries.service';
 
 @Controller('users')
 export class UsersController {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private usersService: UsersService,
+    @Inject(forwardRef(() => CatteriesService))
+    private readonly catteriesService: CatteriesService,
+  ) {}
 
   @Get()
   getAllUsers(): Promise<User[]> {
     return this.usersService.getAllUsers();
+  }
+
+  @Get(':id/catteries/lead')
+  getUserLeadCatteries(@Param() { id }: GetOneParam): Promise<Cattery[]> {
+    return this.usersService.getUserLeadCatteries(id);
   }
 
   @Get(':id')
@@ -38,8 +49,9 @@ export class UsersController {
     return this.usersService.getOwnedCatsByUserId(id);
   }
 
-  createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.createUser(createUserDto);
+  @Get(':id/catteries')
+  getAllUserCatteries(@Param() { id }: GetOneParam): Promise<Cattery[]> {
+    return this.catteriesService.getAllUserCatteries(id);
   }
 
   @Put(':id')

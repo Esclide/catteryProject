@@ -1,6 +1,7 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Cattery } from './cattery.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class ApplicationToCattery {
@@ -24,4 +25,7 @@ export class ApplicationToCattery {
 
   @Column({ default: new Date() })
   applicationDate: Date;
+
+  @Column({ nullable: true })
+  changeDate: Date;
 }

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
@@ -13,10 +13,12 @@ export class ApplicationsService {
   private notActiveError = 'Application is not active';
   private applicationAlreadyExistsError =
     'Active application to this cattery already exists';
+  private alreadyInCatteryError = 'User already in this cattery';
 
   constructor(
     @InjectRepository(ApplicationToCattery)
     private readonly applicationRepository: Repository<ApplicationToCattery>,
+    @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly catteriesService: CatteriesService,
   ) {}
@@ -27,7 +29,7 @@ export class ApplicationsService {
   ): Promise<ApplicationToCattery> {
     const application = await this.applicationRepository.findOne(
       applicationId,
-      { relations: ['cattery'] },
+      { relations: ['cattery', 'user'] },
     );
     const cattery = await this.catteriesService.getCatteryById(catteryId);
     if (application && application.cattery.id === cattery.id) {
@@ -75,6 +77,13 @@ export class ApplicationsService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    if (await this.catteriesService.getCatteryUserById(catteryId, userId)) {
+      throw new HttpException(
+        this.alreadyInCatteryError,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const newApplication = await this.applicationRepository.create(
       createApplicationToCatteryDto,
     );
@@ -113,7 +122,13 @@ export class ApplicationsService {
       throw new HttpException(this.notActiveError, HttpStatus.BAD_REQUEST);
     }
     application.status = applicationStatus.approved;
+    application.changeDate = new Date();
+
     await this.applicationRepository.save(application);
+    await this.catteriesService.addUserToCattery(
+      catteryId,
+      application.user.id,
+    );
     return application;
   }
 
@@ -123,6 +138,8 @@ export class ApplicationsService {
       throw new HttpException(this.notActiveError, HttpStatus.BAD_REQUEST);
     }
     application.status = applicationStatus.rejected;
+    application.changeDate = new Date();
+
     await this.applicationRepository.save(application);
     return application;
   }

@@ -30,10 +30,4 @@ export class AuthController {
     const user = request.user;
     return this.authService.login(user);
   }
-
-  @UseGuards(JwtAuthGuard)
-  @Get('current_user')
-  getProfile(@Req() request) {
-    return request.user;
-  }
 }

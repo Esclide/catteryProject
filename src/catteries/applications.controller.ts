@@ -5,7 +5,6 @@ import {
   HttpCode,
   Param,
   Post,
-  Put,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -38,7 +37,7 @@ export class ApplicationsController {
 
   @HttpCode(200)
   @UseGuards(JwtAuthGuard)
-  @Post('catteries/:id/enter')
+  @Post('catteries/:id/request')
   sendApplicationToCattery(
     @Req() request,
     @Param() { id }: GetOneParam,

@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { GetOneParam } from '../../utils/validators/get-one-param.validator';
@@ -14,6 +15,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Cattery } from './entities/cattery.entity';
 import { CatteriesService } from './catteries.service';
 import { CreateCatteryDto, UpdateCatteryDto } from './dto/cattery-dto';
+import { UserInCattery } from './entities/user-in-cattery.entity';
 
 @Controller('catteries')
 export class CatteriesController {
@@ -50,5 +52,32 @@ export class CatteriesController {
   async deleteCattery(@Param() { id }: GetOneParam): Promise<void> {
     return this.catteriesService.deleteCattery(id);
   }
-}
 
+  @Get(':id/members')
+  getAllUsers(@Param() { id }: GetOneParam): Promise<UserInCattery[]> {
+    return this.catteriesService.getCatteryUsers(id);
+  }
+
+  @Get(':catteryId/members/:userId')
+  getUser(
+    @Param('catteryId') catteryId: string,
+    @Param('userId') userId: string,
+  ): Promise<UserInCattery> {
+    return this.catteriesService.getCatteryUserById(catteryId, userId);
+  }
+
+  @Delete(':catteryId/members/:userId')
+  @UseGuards(JwtAuthGuard)
+  async deleteUserFromCattery(
+    @Param('catteryId') catteryId: string,
+    @Param('userId') userId: string,
+  ): Promise<void> {
+    return this.catteriesService.deleteUserFromCattery(catteryId, userId);
+  }
+
+  @Delete(':id/leave')
+  @UseGuards(JwtAuthGuard)
+  leaveCattery(@Req() request, @Param() { id }: GetOneParam): Promise<void> {
+    return this.catteriesService.deleteUserFromCattery(id, request.user.userId);
+  }
+}

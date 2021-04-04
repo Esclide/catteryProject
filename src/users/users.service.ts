@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto, UpdateUserDto } from './dto/user-dto';
 import * as bcrypt from 'bcrypt';
+import { Cattery } from '../catteries/entities/cattery.entity';
 
 @Injectable()
 export class UsersService {
@@ -29,6 +30,16 @@ export class UsersService {
     const user = await this.usersRepository.findOne(id);
     if (user && !user.isDeleted) {
       return user;
+    }
+    throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
+  }
+
+  async getUserLeadCatteries(id: string): Promise<Cattery[]> {
+    const user = await this.usersRepository.findOne(id, {
+      relations: ['leadCatteries'],
+    });
+    if (user && !user.isDeleted) {
+      return user.leadCatteries;
     }
     throw new HttpException(this.notFoundError, HttpStatus.NOT_FOUND);
   }
