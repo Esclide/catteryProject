@@ -28,3 +28,5 @@ export class Breed {
   @ManyToMany(() => Cattery, (cattery) => cattery.breeds)
   catteries: Cattery[];
 }
+
+
