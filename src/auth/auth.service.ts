@@ -3,6 +3,7 @@ import { CreateUserDto } from '../users/dto/user-dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 const wrongCredentialsErrorMessage = 'Wrong credentials provided';
 
@@ -11,6 +12,7 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   public async registerUser(createUserDto: CreateUserDto) {
@@ -64,8 +66,33 @@ export class AuthService {
 
   async login(user: any) {
     const payload = { username: user.username, sub: user.id };
+    let expireIn: number;
+
+    switch (this.configService.get('JWT_EXPIRATION_TIME').slice(-1)) {
+      case 'm':
+        expireIn =
+          this.configService.get('JWT_EXPIRATION_TIME').slice(0, -1) *
+          60 *
+          1000;
+        break;
+      case 's':
+        expireIn =
+          this.configService.get('JWT_EXPIRATION_TIME').slice(0, -1) * 1000;
+        break;
+      case 'h':
+        expireIn =
+          this.configService.get('JWT_EXPIRATION_TIME').slice(0, -1) *
+          60 *
+          60 *
+          1000;
+        break;
+      default:
+        expireIn = this.configService.get('JWT_EXPIRATION_TIME');
+    }
     return {
-      access_token: this.jwtService.sign(payload),
+      accessToken: this.jwtService.sign(payload),
+      tokenDate: new Date(),
+      expireIn,
     };
   }
 }

@@ -27,7 +27,9 @@ export class UsersService {
   }
 
   async getUserById(id: string) {
-    const user = await this.usersRepository.findOne(id);
+    const user = await this.usersRepository.findOne(id, {
+      relations: ['ownedCats'],
+    });
     if (user && !user.isDeleted) {
       return user;
     }
